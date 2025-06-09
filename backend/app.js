@@ -1,12 +1,49 @@
-require('dotenv').config()
-const express = require('express')
-const mongoose = require('mongoose')
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const passport = require('passport');
+const cors = require('cors');
+
+const authRoutes = require('./routes/auth');
 
 const app = express()
 
 const MONGO_URI=`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_CLUSTER}/${process.env.MONGO_DB}?retryWrites=true&w=majority`
 
 const PORT = process.env.PORT || 8080;
+
+app.use(passport.initialize())
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+app.use(express.json()); // Important for parsing incoming JSON bodies
+
+// Fallback manual CORS configuration in case `cors()` middleware causes issues
+
+/* app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, PATCH, DELETE'
+  );
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+}); */
+
+app.use('/auth', authRoutes);
+
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({ message: message, data: data });
+});
 
 mongoose.connect(MONGO_URI)
   .then(() => {
