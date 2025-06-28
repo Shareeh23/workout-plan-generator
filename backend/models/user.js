@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const workoutPlanSchema = require('./workoutPlanSchema');
 
 const userSchema = new Schema({
   name: {
@@ -13,6 +14,13 @@ const userSchema = new Schema({
   },
   password: { type: String },
   googleId: { type: String },
+  workoutPlan: workoutPlanSchema,
+  workoutHistory: [
+    {
+      plan: workoutPlanSchema,
+      completedAt: Date,
+    },
+  ],
 });
 
 module.exports = mongoose.model('User', userSchema);
