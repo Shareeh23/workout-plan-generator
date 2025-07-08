@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 
 const User = require('../models/user')
 const authController = require('../controllers/auth');
+const isAuth = require('../middleware/is-auth');
 const passport = require('passport')
 
 const router = express.Router();
@@ -34,5 +35,15 @@ router.post('/login', [
   body('email').isEmail().withMessage('Invalid email.').normalizeEmail(),
   body('password').trim().notEmpty().withMessage('Password is required.'),
 ], authController.login);
+
+router.put('/change-password', isAuth, [
+  body('currentPassword')
+    .trim()
+    .not().isEmpty().withMessage('Current password is required'),
+  body('newPassword')
+    .trim()
+    .isLength({ min: 5 }).withMessage('Password must be at least 5 characters long')
+    .not().equals(body('currentPassword')).withMessage('New password must be different from current password'),
+], authController.changePassword);
 
 module.exports = router;

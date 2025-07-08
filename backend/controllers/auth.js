@@ -89,3 +89,42 @@ exports.login = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Prevent Google users from changing password
+    if (user.googleId) {
+      const error = new Error('Google-authenticated users cannot change password');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      const error = new Error('Current password is incorrect');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    // Hash and save new password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
+};
