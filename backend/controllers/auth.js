@@ -63,7 +63,14 @@ exports.login = async (req, res, next) => {
       throw error;
     }
 
-    const isEqual = bcrypt.compare(password, user.password);
+    // Check if user signed up via Google
+    if (user.googleId) {
+      const error = new Error('Please sign in using Google');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const isEqual = await bcrypt.compare(password, user.password);
     if (!isEqual) {
       const error = new Error('Wrong password!');
       error.statusCode = 401;
@@ -79,6 +86,84 @@ exports.login = async (req, res, next) => {
     res.status(200).json({ token, userId: user._id.toString() });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 401;
+    next(err);
+  }
+};
+
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Prevent Google users from changing password
+    if (user.googleId) {
+      const error = new Error('Google-authenticated users cannot change password');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      const error = new Error('Current password is incorrect');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    // Hash and save new password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
+};
+
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const { email, name } = req.body;
+    
+    // Check if email is being updated and is unique
+    if (email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser && existingUser._id.toString() !== req.user._id.toString()) {
+        const error = new Error('Email already in use');
+        error.statusCode = 409;
+        throw error;
+      }
+    }
+
+    const user = await User.findById(req.user._id);
+    if (name) user.name = name;
+    if (email) user.email = email;
+    await user.save();
+
+    res.status(200).json({ 
+      message: 'Profile updated',
+      user: { name: user.name, email: user.email }
+    });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
+};
+
+exports.deleteAccount = async (req, res, next) => {
+  try {
+    await User.findByIdAndDelete(req.user._id);
+    res.status(200).json({ message: 'Account deleted successfully' });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
     next(err);
   }
 };
