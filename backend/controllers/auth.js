@@ -128,3 +128,34 @@ exports.changePassword = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const { email, name } = req.body;
+    
+    // Check if email is being updated and is unique
+    if (email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser && existingUser._id.toString() !== req.user._id.toString()) {
+        const error = new Error('Email already in use');
+        error.statusCode = 409;
+        throw error;
+      }
+    }
+
+    const user = await User.findById(req.user._id);
+    if (name) user.name = name;
+    if (email) user.email = email;
+    await user.save();
+
+    res.status(200).json({ 
+      message: 'Profile updated',
+      user: { name: user.name, email: user.email }
+    });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
+};
+
+
