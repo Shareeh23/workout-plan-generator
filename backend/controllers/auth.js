@@ -63,7 +63,14 @@ exports.login = async (req, res, next) => {
       throw error;
     }
 
-    const isEqual = bcrypt.compare(password, user.password);
+    // Check if user signed up via Google
+    if (user.googleId) {
+      const error = new Error('Please sign in using Google');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const isEqual = await bcrypt.compare(password, user.password);
     if (!isEqual) {
       const error = new Error('Wrong password!');
       error.statusCode = 401;
