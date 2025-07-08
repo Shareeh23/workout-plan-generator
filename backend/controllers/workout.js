@@ -2,18 +2,16 @@ const axios = require('axios');
 const calorieCalculator = require('../services/calorieCalculator');
 const macroCalculator = require('../services/macroCalculator');
 const oneRepMaxCalculator = require('../services/oneRepMaxCalculator');
+const { validationResult } = require('express-validator');
 
 exports.generatePlan = async (req, res) => {
   try {
-    const { archetype, trainingDays } = req.body;
-
-    if (!archetype || !trainingDays) {
-      return res
-        .status(400)
-        .json({ error: 'Missing archetype or trainingDays' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    // Use authenticated user's ID
+    const { archetype, trainingDays } = req.body;
     const userId = req.user._id;
 
     const response = await axios.post(
@@ -56,14 +54,12 @@ exports.generatePlan = async (req, res) => {
 // Calorie calculation endpoint
 exports.calculateCalories = async (req, res, next) => {
   try {
-    const { gender, weight, height, age, activityLevel } = req.body;
-    
-    if (!gender || !weight || !height || !age || !activityLevel) {
-      const error = new Error('Missing required parameters');
-      error.statusCode = 400;
-      throw error;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-
+    
+    const { gender, weight, height, age, activityLevel } = req.body;
     const calories = calorieCalculator.calculateDailyCalories(
       gender, 
       parseFloat(weight), 
@@ -74,7 +70,6 @@ exports.calculateCalories = async (req, res, next) => {
     
     res.status(200).json({ calories });
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
     next(err);
   }
 };
@@ -82,19 +77,16 @@ exports.calculateCalories = async (req, res, next) => {
 // Macro calculation endpoint
 exports.calculateMacros = async (req, res, next) => {
   try {
-    const { calories, goal } = req.body;
-    
-    if (!calories) {
-      const error = new Error('Calories parameter is required');
-      error.statusCode = 400;
-      throw error;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-
+    
+    const { calories, goal } = req.body;
     const macros = macroCalculator.calculateMacros(parseInt(calories), goal);
     
     res.status(200).json({ macros });
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
     next(err);
   }
 };
@@ -102,14 +94,12 @@ exports.calculateMacros = async (req, res, next) => {
 // 1RM calculation endpoint
 exports.calculateOneRepMax = async (req, res, next) => {
   try {
-    const { weight, reps } = req.body;
-    
-    if (!weight || !reps) {
-      const error = new Error('Weight and reps parameters are required');
-      error.statusCode = 400;
-      throw error;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-
+    
+    const { weight, reps } = req.body;
     const oneRepMax = oneRepMaxCalculator.calculateOneRepMax(
       parseFloat(weight), 
       parseInt(reps)
@@ -119,7 +109,6 @@ exports.calculateOneRepMax = async (req, res, next) => {
     
     res.status(200).json({ oneRepMax, trainingWeights });
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
     next(err);
   }
 };

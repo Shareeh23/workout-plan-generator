@@ -5,7 +5,17 @@ const workoutController = require('../controllers/workout.js');
 
 const router = express.Router();
 
-router.post('/generate', isAuth, workoutController.generatePlan);
+router.post(
+  '/generate',
+  isAuth,
+  [
+    body('archetype').notEmpty().withMessage('Archetype is required'),
+    body('trainingDays')
+      .isInt({ min: 3, max: 6 })
+      .withMessage('Training days must be between 3 and 6')
+  ],
+  workoutController.generatePlan
+);
 
 // Calculator routes
 router.post(
