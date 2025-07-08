@@ -1,26 +1,29 @@
 require('dotenv').config();
-require('./config/passport')
+require('./config/passport');
 const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
+const workoutRoutes = require('./routes/workout');
 
-const app = express()
+const app = express();
 
-const MONGO_URI=`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_CLUSTER}/${process.env.MONGO_DB}?retryWrites=true&w=majority`
+const MONGO_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_CLUSTER}/${process.env.MONGO_DB}?retryWrites=true&w=majority`;
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
-app.use(passport.initialize())
+app.use(passport.initialize());
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:5000',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  })
+);
 
 app.use(express.json()); // Important for parsing incoming JSON bodies
 
@@ -37,6 +40,7 @@ app.use(express.json()); // Important for parsing incoming JSON bodies
 }); */
 
 app.use('/auth', authRoutes);
+app.use('/workout', workoutRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);
@@ -46,12 +50,13 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-mongoose.connect(MONGO_URI)
+mongoose
+  .connect(MONGO_URI)
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`)
-    })
+      console.log(`Server running on port ${PORT}`);
+    });
   })
   .catch((err) => {
-    console.error('Failed to connect to MongoDB', err)
-  })
+    console.error('Failed to connect to MongoDB', err);
+  });
