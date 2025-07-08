@@ -73,4 +73,6 @@ router.patch('/profile', isAuth, [
   body('name').optional().trim().notEmpty().withMessage('Name cannot be empty')
 ], authController.updateProfile);
 
+router.delete('/delete', isAuth, authController.deleteAccount);
+
 module.exports = router;
