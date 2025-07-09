@@ -8,4 +8,4 @@ const workoutSessionSchema = new mongoose.Schema({
   notes: { type: String },
 });
 
-module.exports = mongoose.model('WorkoutSession', workoutSessionSchema);
+module.exports = workoutSessionSchema;

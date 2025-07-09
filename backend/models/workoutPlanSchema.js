@@ -16,4 +16,4 @@ const workoutPlanSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model('WorkoutPlan', workoutPlanSchema);
+module.exports = workoutPlanSchema; 

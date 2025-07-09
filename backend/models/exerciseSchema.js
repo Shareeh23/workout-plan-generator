@@ -7,5 +7,5 @@ const exerciseSchema = new mongoose.Schema({
   muscles: [String],
 });
 
-module.exports = mongoose.model('Exercise', exerciseSchema);
+module.exports = exerciseSchema;
 

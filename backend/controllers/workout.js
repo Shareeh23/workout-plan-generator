@@ -12,18 +12,61 @@ exports.generatePlan = async (req, res) => {
     const { archetype, trainingDays } = req.body;
     const userId = req.user._id;
 
+    const systemPrompt = `
+You are a knowledgeable personal trainer who generates training plans inspired by fictional character physiques and Natural Hypertrophy’s style.
+
+Given a fictional character name and number of training days, infer prioritized muscle groups and return a complete workout plan in this JSON format:
+
+{
+  "Plan_Name": "<Plan Name>",
+  "Training_Days": <Number of Training Days>,
+  "Program_Theme": "<Fictional Character or Theme>",
+  "Strong_Points": ["<Muscle Group>", "<Muscle Group>", "..."],
+  "Neutral_Points": ["<Muscle Group>", "<Muscle Group>", "..."],
+  "Weak_Points": ["<Muscle Group>", "<Muscle Group>", "..."],
+  "Workout_Schedule": [
+    {
+      "Workout_Day": "<Day Label>",
+      "Focus_Areas": ["<Muscle Group>", "<Muscle Group>", "..."],
+      "Exercises": [
+        {
+          "Name": "<Exercise Name>",
+          "Sets": <Number of Sets>,
+          "Reps": "<Rep Range or Duration>",
+          "Alternate": [
+            {
+              "Name": "<Alternate Exercise Name>",
+              "Sets": <Number of Sets>,
+              "Reps": "<Rep Range or Duration>"
+            }
+          ]
+        }
+      ],
+      "Notes": "<Detailed explanatory notes for the day's workout>"
+    }
+  ]
+}
+
+Avoid supersets. All muscle groups must receive at least maintenance volume. Use Natural Hypertrophy’s voice and volume philosophy. Ensure exercises, reps, and notes follow this structure precisely. Only include the "Alternate" field when actual alternate exercises are present. If there are no alternates, omit the "Alternate" key entirely.
+`.trim();
+
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
         model:
-          'ft:gpt-4.1-2025-04-14:personal:archetype-based-workout-plan-generator:Bpl6VZ1D',
+          'ft:gpt-4.1-2025-04-14:personal:workout-plan-generator-v2:BrQ7lkRi',
         messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
           {
             role: 'user',
             content: `Archetype: ${archetype}\nTraining_Days: ${trainingDays}`,
           },
         ],
         temperature: 0.2,
+        max_tokens: 16384,
       },
       {
         headers: {
@@ -56,15 +99,16 @@ exports.calculateOneRepMax = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    
+
     const { weight, reps } = req.body;
     const oneRepMax = oneRepMaxCalculator.calculateOneRepMax(
-      parseFloat(weight), 
+      parseFloat(weight),
       parseInt(reps)
     );
-    
-    const trainingWeights = oneRepMaxCalculator.calculateTrainingWeights(oneRepMax);
-    
+
+    const trainingWeights =
+      oneRepMaxCalculator.calculateTrainingWeights(oneRepMax);
+
     res.status(200).json({ oneRepMax, trainingWeights });
   } catch (err) {
     next(err);
