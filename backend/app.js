@@ -7,6 +7,7 @@ const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
 const workoutRoutes = require('./routes/workout');
+const nutritionRoutes = require('./routes/nutrition');
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use(express.json()); // Important for parsing incoming JSON bodies
 
 app.use('/auth', authRoutes);
 app.use('/workout', workoutRoutes);
+app.use('/nutrition', nutritionRoutes);
 
 app.use((error, req, res, next) => {
   console.log(error);
