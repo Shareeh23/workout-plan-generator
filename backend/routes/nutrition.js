@@ -5,6 +5,31 @@ const isAuth = require('../middleware/auth');
 
 const router = express.Router();
 
+// Calculator endpoints
+router.post(
+  '/nutrition-metrics',
+  isAuth,
+  [
+    body('height').isFloat({ min: 100, max: 250 }),
+    body('weight').isFloat({ min: 30, max: 300 }),
+    body('age').isInt({ min: 13, max: 120 }),
+    body('gender').isIn(['male', 'female', 'other']),
+    body('activityLevel').isIn(['sedentary', 'light', 'moderate', 'active', 'very_active']),
+    body('goal').optional().isIn(['maintain', 'lose', 'gain'])
+  ],
+  nutritionController.nutritionMetrics
+);
+
+router.post(
+  '/calculate-macros',
+  isAuth,
+  [
+    body('calories').isInt({ min: 1000, max: 10000 }),
+    body('split').optional().isIn(['40-30-30', '50-25-25', '30-40-30'])
+  ],
+  nutritionController.calculateMacros
+);
+
 // Create nutrition profile
 router.post(
   '/create-profile',

@@ -17,30 +17,6 @@ router.post(
   workoutController.generatePlan
 );
 
-// Calculator routes
-router.post(
-  '/calculate/calories',
-  isAuth,
-  [
-    body('gender').isIn(['male', 'female']),
-    body('weight').isFloat({ min: 30, max: 300 }),
-    body('height').isFloat({ min: 100, max: 250 }),
-    body('age').isInt({ min: 13, max: 120 }),
-    body('activityLevel').isIn(['sedentary', 'light', 'moderate', 'active', 'veryActive'])
-  ],
-  workoutController.calculateCalories
-);
-
-router.post(
-  '/calculate/macros',
-  isAuth,
-  [
-    body('calories').isInt({ min: 1000, max: 10000 }),
-    body('goal').optional().isIn(['maintenance', 'muscleGain', 'fatLoss'])
-  ],
-  workoutController.calculateMacros
-);
-
 router.post(
   '/calculate/onerepmax',
   isAuth,
