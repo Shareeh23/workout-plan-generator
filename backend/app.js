@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const cors = require('cors');
+const { WorkoutGenerationError } = require('./utils/errors');
 
 const authRoutes = require('./routes/auth');
 const workoutRoutes = require('./routes/workout');
@@ -43,6 +44,20 @@ app.use(express.json()); // Important for parsing incoming JSON bodies
 app.use('/auth', authRoutes);
 app.use('/workout', workoutRoutes);
 app.use('/nutrition', nutritionRoutes);
+
+// Enhanced error handling middleware
+app.use((error, req, res, next) => {
+  if (error instanceof WorkoutGenerationError) {
+    return res.status(502).json({
+      status: 'error',
+      message: 'Workout generation failed',
+      details: error.details,
+    });
+  }
+
+  // Pass to default error handler
+  next(error);
+});
 
 app.use((error, req, res, next) => {
   console.log(error);

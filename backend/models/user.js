@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 const workoutPlanSchema = require('./workoutPlanSchema');
 const nutritionProfileSchema = require('./nutritionProfileSchema');
 
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -18,8 +18,14 @@ const userSchema = new Schema({
   workoutPlan: workoutPlanSchema,
   workoutHistory: [
     {
-      plan: workoutPlanSchema,
-      completedAt: Date,
+      planRef: { 
+        type: mongoose.Schema.Types.ObjectId,
+        required: true 
+      },
+      planName: { type: String },
+      createdAt: { type: Date, default: Date.now },
+      completedAt: { type: Date },
+      programTheme: { type: String }
     },
   ],
   nutritionProfile: {

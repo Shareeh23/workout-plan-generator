@@ -1,19 +1,12 @@
 const axios = require('axios');
+const User = require('../models/user');
+const { parseWorkoutPlan } = require('../utils/workoutParser');
 const oneRepMaxCalculator = require('../services/oneRepMaxCalculator');
 const { validationResult } = require('express-validator');
+const { WorkoutGenerationError } = require('../utils/errors');
 
-exports.generatePlan = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { archetype, trainingDays } = req.body;
-    const userId = req.user._id;
-
-    const systemPrompt = `
-You are a knowledgeable personal trainer who generates training plans inspired by fictional character physiques and Natural Hypertrophy’s style.
+const systemPrompt = `
+You are a knowledgeable personal trainer who generates training plans inspired by fictional character physiques and Natural Hypertrophy's style.
 
 Given a fictional character name and number of training days, infer prioritized muscle groups and return a complete workout plan in this JSON format:
 
@@ -47,48 +40,70 @@ Given a fictional character name and number of training days, infer prioritized 
   ]
 }
 
-Avoid supersets. All muscle groups must receive at least maintenance volume. Use Natural Hypertrophy’s voice and volume philosophy. Ensure exercises, reps, and notes follow this structure precisely. Only include the "Alternate" field when actual alternate exercises are present. If there are no alternates, omit the "Alternate" key entirely.
+Avoid supersets. All muscle groups must receive at least maintenance volume. Use Natural Hypertrophy's voice and volume philosophy. Ensure exercises, reps, and notes follow this structure precisely. Only include the "Alternate" field when actual alternate exercises are present. If there are no alternates, omit the "Alternate" key entirely.
 `.trim();
 
+const generateWorkoutFromAI = async (archetype, trainingDays) => {
+  try {
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-        model:
-          'ft:gpt-4.1-2025-04-14:personal:workout-plan-generator-v2:BrQ7lkRi',
+        model: 'ft:gpt-4.1-2025-04-14:personal:workout-plan-generator-v2:BrQ7lkRi',
         messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          },
-          {
-            role: 'user',
-            content: `Archetype: ${archetype}\nTraining_Days: ${trainingDays}`,
-          },
-        ],
-        temperature: 0.2,
-        max_tokens: 16384,
+          { role: 'system', content: systemPrompt },
+          { 
+            role: 'user', 
+            content: JSON.stringify({
+              Archetype: archetype,
+              Training_Days: trainingDays
+            })
+          }
+        ]
       },
       {
         headers: {
           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'
+        }
       }
     );
-
-    res.json({
-      status: 'success',
-      rawResponse: response.data,
-    });
+    return response.data;
   } catch (error) {
-    console.error('OpenAI API error:', error);
-    res.status(500).json({
-      error: 'API call failed',
-      details: {
-        message: error.message,
-        responseData: error.response?.data,
-      },
+    throw new WorkoutGenerationError('Failed to generate workout from AI', {
+      originalError: error,
+      requestData: { archetype, trainingDays }
     });
+  }
+};
+
+exports.generatePlan = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { archetype, trainingDays } = req.body;
+    const aiResponse = await generateWorkoutFromAI(archetype, trainingDays);
+    const workoutPlan = parseWorkoutPlan(aiResponse);
+    
+    const user = await User.findById(req.user._id);
+    user.workoutPlan = workoutPlan;
+    
+    if (user.workoutHistory) {
+      user.workoutHistory.push({
+        planRef: workoutPlan._id,
+        planName: workoutPlan.planName,
+        createdAt: workoutPlan.createdAt,
+        completedAt: null,
+        programTheme: workoutPlan.programTheme
+      });
+    }
+    
+    await user.save();
+    res.json({ status: 'success', workoutPlan });
+  } catch (error) {
+    next(error);
   }
 };
 
