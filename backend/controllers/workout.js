@@ -83,12 +83,24 @@ exports.generatePlan = async (req, res, next) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
+    const user = await User.findById(req.user._id);
+    
+    // Check for active plan
+    if (user.workoutPlan?.isActive) {
+      return res.status(400).json({
+        status: 'error',
+        code: 'ACTIVE_PLAN_EXISTS',
+        message: 'You already have an active workout plan',
+        action: 'Complete or deactivate current plan first'
+      });
+    }
+
     const { archetype, trainingDays } = req.body;
     const aiResponse = await generateWorkoutFromAI(archetype, trainingDays);
     const workoutPlan = parseWorkoutPlan(aiResponse);
     
-    const user = await User.findById(req.user._id);
-    user.workoutPlan = workoutPlan;
+    // Set plan as active
+    user.workoutPlan = { ...workoutPlan, isActive: true };
     
     if (user.workoutHistory) {
       user.workoutHistory.push({
@@ -127,5 +139,45 @@ exports.calculateOneRepMax = async (req, res, next) => {
     res.status(200).json({ oneRepMax, trainingWeights });
   } catch (err) {
     next(err);
+  }
+};
+
+exports.deactivatePlan = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    
+    if (!user.workoutPlan) {
+      return res.status(400).json({
+        status: 'error',
+        code: 'NO_ACTIVE_PLAN',
+        message: 'No workout plan to deactivate'
+      });
+    }
+
+    // Update history entry before clearing plan
+    if (user.workoutHistory) {
+      const activePlanIndex = user.workoutHistory.findIndex(
+        entry => entry.planRef.equals(user.workoutPlan._id)
+      );
+      
+      if (activePlanIndex !== -1) {
+        user.workoutHistory[activePlanIndex].completedAt = new Date();
+      }
+    }
+
+    user.workoutPlan = undefined; // Remove the entire plan
+    await user.save();
+
+    res.json({ 
+      status: 'success',
+      suggestedAction: {
+        type: 'redirect',
+        path: '/generate'
+      },
+      message: 'Workout plan deactivated'
+    });
+
+  } catch (error) {
+    next(error);
   }
 };

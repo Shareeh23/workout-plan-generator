@@ -27,4 +27,10 @@ router.post(
   workoutController.calculateOneRepMax
 );
 
+router.post(
+  '/deactivate',
+  isAuth,
+  workoutController.deactivatePlan
+);
+
 module.exports = router;
