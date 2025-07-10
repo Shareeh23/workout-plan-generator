@@ -1,5 +1,5 @@
 const express = require('express');
-const { body, query } = require('express-validator');
+const { body, query, param } = require('express-validator');
 const isAuth = require('../middleware/is-auth');
 const workoutController = require('../controllers/workout.js');
 
@@ -65,6 +65,31 @@ router.get('/planned-exercises',
       .withMessage('Valid session order required')
   ],
   workoutController.getPlannedExercises
+);
+
+router.get('/plan/priorities', 
+  isAuth,
+  workoutController.getMuscleGroupPriorities
+);
+
+router.get('/plan/summary',
+  isAuth,
+  workoutController.getWorkoutPlanSummary
+);
+
+router.get('/plan', 
+  isAuth,
+  workoutController.getFullWorkoutPlan
+);
+
+router.get('/plan/sessions/:sessionOrder',
+  isAuth,
+  [
+    param('sessionOrder')
+      .isInt({ min: 1 })
+      .withMessage('Valid session order required')
+  ],
+  workoutController.getWorkoutSession
 );
 
 module.exports = router;

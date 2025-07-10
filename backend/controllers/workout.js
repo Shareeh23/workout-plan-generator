@@ -49,30 +49,31 @@ const generateWorkoutFromAI = async (archetype, trainingDays) => {
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-        model: 'ft:gpt-4.1-2025-04-14:personal:workout-plan-generator-v2:BrQ7lkRi',
+        model:
+          'ft:gpt-4.1-2025-04-14:personal:workout-plan-generator-v2:BrQ7lkRi',
         messages: [
           { role: 'system', content: systemPrompt },
-          { 
-            role: 'user', 
+          {
+            role: 'user',
             content: JSON.stringify({
               Archetype: archetype,
-              Training_Days: trainingDays
-            })
-          }
-        ]
+              Training_Days: trainingDays,
+            }),
+          },
+        ],
       },
       {
         headers: {
           Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       }
     );
     return response.data;
   } catch (error) {
     throw new WorkoutGenerationError('Failed to generate workout from AI', {
       originalError: error,
-      requestData: { archetype, trainingDays }
+      requestData: { archetype, trainingDays },
     });
   }
 };
@@ -85,34 +86,34 @@ exports.generatePlan = async (req, res, next) => {
     }
 
     const user = await User.findById(req.user._id);
-    
+
     // Check for active plan
     if (user.workoutPlan?.isActive) {
       return res.status(400).json({
         status: 'error',
         code: 'ACTIVE_PLAN_EXISTS',
         message: 'You already have an active workout plan',
-        action: 'Complete or deactivate current plan first'
+        action: 'Complete or deactivate current plan first',
       });
     }
 
     const { archetype, trainingDays } = req.body;
     const aiResponse = await generateWorkoutFromAI(archetype, trainingDays);
     const workoutPlan = parseWorkoutPlan(aiResponse);
-    
+
     // Set plan as active
     user.workoutPlan = { ...workoutPlan, isActive: true };
-    
+
     if (user.workoutHistory) {
       user.workoutHistory.push({
         planRef: workoutPlan._id,
         planName: workoutPlan.planName,
         createdAt: workoutPlan.createdAt,
         completedAt: null,
-        programTheme: workoutPlan.programTheme
+        programTheme: workoutPlan.programTheme,
       });
     }
-    
+
     await user.save();
     res.json({ status: 'success', workoutPlan });
   } catch (error) {
@@ -146,21 +147,21 @@ exports.calculateOneRepMax = async (req, res, next) => {
 exports.deactivatePlan = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    
+
     if (!user.workoutPlan) {
       return res.status(400).json({
         status: 'error',
         code: 'NO_ACTIVE_PLAN',
-        message: 'No workout plan to deactivate'
+        message: 'No workout plan to deactivate',
       });
     }
 
     // Update history entry before clearing plan
     if (user.workoutHistory) {
-      const activePlanIndex = user.workoutHistory.findIndex(
-        entry => entry.planRef.equals(user.workoutPlan._id)
+      const activePlanIndex = user.workoutHistory.findIndex((entry) =>
+        entry.planRef.equals(user.workoutPlan._id)
       );
-      
+
       if (activePlanIndex !== -1) {
         user.workoutHistory[activePlanIndex].completedAt = new Date();
       }
@@ -169,15 +170,14 @@ exports.deactivatePlan = async (req, res, next) => {
     user.workoutPlan = undefined; // Remove the entire plan
     await user.save();
 
-    res.json({ 
+    res.json({
       status: 'success',
       suggestedAction: {
         type: 'redirect',
-        path: '/generate'
+        path: '/generate',
       },
-      message: 'Workout plan deactivated'
+      message: 'Workout plan deactivated',
     });
-
   } catch (error) {
     next(error);
   }
@@ -187,15 +187,15 @@ exports.createLog = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         status: 'error',
-        errors: errors.array() 
+        errors: errors.array(),
       });
     }
-    
-    const log = await WorkoutLog.create({ 
+
+    const log = await WorkoutLog.create({
       userId: req.user._id,
-      ...req.body
+      ...req.body,
     });
     res.status(201).json(log);
   } catch (error) {
@@ -205,8 +205,9 @@ exports.createLog = async (req, res, next) => {
 
 exports.getLogs = async (req, res, next) => {
   try {
-    const logs = await WorkoutLog.find({ userId: req.user._id })
-      .sort({ date: -1 });
+    const logs = await WorkoutLog.find({ userId: req.user._id }).sort({
+      date: -1,
+    });
     res.json(logs);
   } catch (error) {
     next(error);
@@ -217,12 +218,12 @@ exports.updateLog = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         status: 'error',
-        errors: errors.array() 
+        errors: errors.array(),
       });
     }
-    
+
     const log = await WorkoutLog.findOneAndUpdate(
       { _id: req.params.logId, userId: req.user._id },
       req.body,
@@ -238,27 +239,141 @@ exports.updateLog = async (req, res, next) => {
 exports.getPlannedExercises = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
-    
+
     if (!user.workoutPlan) {
       return res.status(404).json({
         status: 'error',
-        message: 'No active workout plan found'
+        message: 'No active workout plan found',
       });
     }
-    
-    const session = user.workoutPlan.trainingDays
-      .find(day => day.order === Number(req.query.sessionOrder));
-      
+
+    const session = user.workoutPlan.trainingDays.find(
+      (day) => day.order === Number(req.query.sessionOrder)
+    );
+
     if (!session) {
       return res.status(404).json({
         status: 'error',
-        message: 'Session not found in plan'
+        message: 'Session not found in plan',
       });
     }
-    
+
     res.json({
       status: 'success',
-      exercises: session.exercises
+      exercises: session.exercises,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getMuscleGroupPriorities = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user.workoutPlan) {
+      return res.status(404).json({
+        status: 'error',
+        code: 'NO_ACTIVE_PLAN',
+        message: 'No active workout plan found',
+      });
+    }
+
+    res.json({
+      status: 'success',
+      data: {
+        strongPoints: user.workoutPlan.strongPoints,
+        neutralPoints: user.workoutPlan.neutralPoints,
+        weakPoints: user.workoutPlan.weakPoints,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getWorkoutPlanSummary = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user.workoutPlan) {
+      return res.status(404).json({
+        status: 'error',
+        code: 'NO_ACTIVE_PLAN',
+        message: 'No active workout plan found',
+      });
+    }
+
+    res.json({
+      status: 'success',
+      data: {
+        planName: user.workoutPlan.planName,
+        programTheme: user.workoutPlan.programTheme,
+        trainingDays: user.workoutPlan.trainingDays.length,
+        createdAt: user.workoutPlan.createdAt,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getFullWorkoutPlan = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user.workoutPlan) {
+      return res.status(404).json({
+        status: 'error',
+        code: 'NO_ACTIVE_PLAN',
+        message: 'No active workout plan found',
+      });
+    }
+
+    res.json({
+      status: 'success',
+      data: user.workoutPlan,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getWorkoutSession = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        status: 'error',
+        errors: errors.array()
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user.workoutPlan) {
+      return res.status(404).json({
+        status: 'error',
+        code: 'NO_ACTIVE_PLAN',
+        message: 'No active workout plan found',
+      });
+    }
+
+    const session = user.workoutPlan.trainingDays.find(
+      (day) => day.order === Number(req.params.sessionOrder)
+    );
+
+    if (!session) {
+      return res.status(404).json({
+        status: 'error',
+        code: 'SESSION_NOT_FOUND',
+        message: 'Session not found in plan',
+      });
+    }
+
+    res.json({
+      status: 'success',
+      data: session,
     });
   } catch (error) {
     next(error);
