@@ -4,6 +4,7 @@ const { parseWorkoutPlan } = require('../utils/workoutParser');
 const oneRepMaxCalculator = require('../services/oneRepMaxCalculator');
 const { validationResult } = require('express-validator');
 const { WorkoutGenerationError } = require('../utils/errors');
+const WorkoutLog = require('../models/workoutLogSchema');
 
 const systemPrompt = `
 You are a knowledgeable personal trainer who generates training plans inspired by fictional character physiques and Natural Hypertrophy's style.
@@ -177,6 +178,88 @@ exports.deactivatePlan = async (req, res, next) => {
       message: 'Workout plan deactivated'
     });
 
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.createLog = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        status: 'error',
+        errors: errors.array() 
+      });
+    }
+    
+    const log = await WorkoutLog.create({ 
+      userId: req.user._id,
+      ...req.body
+    });
+    res.status(201).json(log);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getLogs = async (req, res, next) => {
+  try {
+    const logs = await WorkoutLog.find({ userId: req.user._id })
+      .sort({ date: -1 });
+    res.json(logs);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateLog = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        status: 'error',
+        errors: errors.array() 
+      });
+    }
+    
+    const log = await WorkoutLog.findOneAndUpdate(
+      { _id: req.params.logId, userId: req.user._id },
+      req.body,
+      { new: true }
+    );
+    if (!log) throw new Error('Log not found');
+    res.json(log);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getPlannedExercises = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    
+    if (!user.workoutPlan) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'No active workout plan found'
+      });
+    }
+    
+    const session = user.workoutPlan.trainingDays
+      .find(day => day.order === Number(req.query.sessionOrder));
+      
+    if (!session) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Session not found in plan'
+      });
+    }
+    
+    res.json({
+      status: 'success',
+      exercises: session.exercises
+    });
   } catch (error) {
     next(error);
   }
