@@ -40,12 +40,16 @@ exports.oauthGoogle = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { email: user.email, userId: user._id.toString() },
+      { 
+        email: user.email, 
+        userId: user._id.toString(),
+        isAdmin: user.isAdmin 
+      },
       process.env.JWT_SECRET_KEY,
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ token, userId: user._id.toString() });
+    res.status(200).json({ token, userId: user._id.toString(), isAdmin: user.isAdmin });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -78,12 +82,16 @@ exports.login = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { email: user.email, userId: user._id.toString() },
+      { 
+        email: user.email, 
+        userId: user._id.toString(),
+        isAdmin: user.isAdmin 
+      },
       process.env.JWT_SECRET_KEY,
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ token, userId: user._id.toString() });
+    res.status(200).json({ token, userId: user._id.toString(), isAdmin: user.isAdmin });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 401;
     next(err);

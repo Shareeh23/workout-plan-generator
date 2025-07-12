@@ -9,6 +9,7 @@ const { WorkoutGenerationError } = require('./utils/errors');
 const authRoutes = require('./routes/auth');
 const workoutRoutes = require('./routes/workout');
 const nutritionRoutes = require('./routes/nutrition');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use(express.json()); // Important for parsing incoming JSON bodies
 }); */
 
 app.use('/auth', authRoutes);
+app.use('/admin', adminRoutes);
 app.use('/workout', workoutRoutes);
 app.use('/nutrition', nutritionRoutes);
 
