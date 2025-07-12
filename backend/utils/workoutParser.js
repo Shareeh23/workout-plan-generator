@@ -11,6 +11,12 @@ const parseWorkoutPlan = (rawResponse) => {
       planId: new mongoose.Types.ObjectId(),
       source: 'ai',
       createdAt: new Date(rawResponse.created * 1000),
+      metadata: {
+        requestParams: {
+          planName: content.Plan_Name,
+          trainingDays: content.Training_Days
+        }
+      },
       planName: content.Plan_Name,
       programTheme: content.Program_Theme,
       prioritizedMuscles: content.Strong_Points,
