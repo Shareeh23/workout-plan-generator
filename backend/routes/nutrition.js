@@ -14,8 +14,14 @@ router.post(
     body('weight').isFloat({ min: 30, max: 300 }),
     body('age').isInt({ min: 13, max: 120 }),
     body('gender').isIn(['male', 'female', 'other']),
-    body('activityLevel').isIn(['sedentary', 'light', 'moderate', 'active', 'very_active']),
-    body('goal').optional().isIn(['maintain', 'lose', 'gain'])
+    body('activityLevel').isIn([
+      'sedentary',
+      'light',
+      'moderate',
+      'active',
+      'very_active',
+    ]),
+    body('goal').optional().isIn(['maintain', 'lose', 'gain']),
   ],
   nutritionController.nutritionMetrics
 );
@@ -25,7 +31,7 @@ router.post(
   isAuth,
   [
     body('calories').isInt({ min: 1000, max: 10000 }),
-    body('split').optional().isIn(['40-30-30', '50-25-25', '30-40-30'])
+    body('split').optional().isIn(['40-30-30', '50-25-25', '30-40-30']),
   ],
   nutritionController.calculateMacros
 );
@@ -42,7 +48,7 @@ router.post(
     body('macroTarget.macroSplit').isIn(['40-30-30', '50-25-25', '30-40-30']),
     body('macroTarget.protein').isFloat({ gt: 0 }),
     body('macroTarget.carbs').isFloat({ gt: 0 }),
-    body('macroTarget.fat').isFloat({ gt: 0 })
+    body('macroTarget.fat').isFloat({ gt: 0 }),
   ],
   nutritionController.createNutritionProfile
 );
@@ -56,10 +62,12 @@ router.patch(
     body('height').optional().isFloat({ gt: 0 }),
     body('currentWeight').optional().isFloat({ gt: 0 }),
     body('calorieTarget').optional().isFloat({ gt: 0 }),
-    body('macroTarget.macroSplit').optional().isIn(['40-30-30', '50-25-25', '30-40-30']),
+    body('macroTarget.macroSplit')
+      .optional()
+      .isIn(['40-30-30', '50-25-25', '30-40-30']),
     body('macroTarget.protein').optional().isFloat({ gt: 0 }),
     body('macroTarget.carbs').optional().isFloat({ gt: 0 }),
-    body('macroTarget.fat').optional().isFloat({ gt: 0 })
+    body('macroTarget.fat').optional().isFloat({ gt: 0 }),
   ],
   nutritionController.updateNutritionProfile
 );
