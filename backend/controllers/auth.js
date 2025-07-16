@@ -2,8 +2,8 @@ require('dotenv').config();
 
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { generateAuthResponse } = require('../utils/auth-util');
 
 exports.signup = async (req, res, next) => {
   try {
@@ -17,11 +17,14 @@ exports.signup = async (req, res, next) => {
 
     const { name, email, password } = req.body;
     const hashedPw = await bcrypt.hash(password, 12);
-
     const user = new User({ email, password: hashedPw, name });
-    const result = await user.save();
 
-    res.status(201).json({ message: 'User created!', userId: result._id });
+    const result = await user.save();
+    const authData = generateAuthResponse(result);
+    res.status(201).json({
+      message: 'User registered successfully',
+      ...authData,
+    });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -39,17 +42,11 @@ exports.oauthGoogle = async (req, res, next) => {
       await user.save();
     }
 
-    const token = jwt.sign(
-      { 
-        email: user.email, 
-        userId: user._id.toString(),
-        isAdmin: user.isAdmin 
-      },
-      process.env.JWT_SECRET_KEY,
-      { expiresIn: '1h' }
-    );
-
-    res.status(200).json({ token, userId: user._id.toString(), isAdmin: user.isAdmin });
+    const authData = generateAuthResponse(user);
+    res.status(201).json({
+      message: 'User registered successfully',
+      ...authData,
+    });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -81,17 +78,11 @@ exports.login = async (req, res, next) => {
       throw error;
     }
 
-    const token = jwt.sign(
-      { 
-        email: user.email, 
-        userId: user._id.toString(),
-        isAdmin: user.isAdmin 
-      },
-      process.env.JWT_SECRET_KEY,
-      { expiresIn: '1h' }
-    );
-
-    res.status(200).json({ token, userId: user._id.toString(), isAdmin: user.isAdmin });
+    const authData = generateAuthResponse(user);
+    res.status(200).json({
+      message: 'Login successful',
+      ...authData,
+    });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 401;
     next(err);
@@ -112,7 +103,9 @@ exports.changePassword = async (req, res, next) => {
 
     // Prevent Google users from changing password
     if (user.googleId) {
-      const error = new Error('Google-authenticated users cannot change password');
+      const error = new Error(
+        'Google-authenticated users cannot change password'
+      );
       error.statusCode = 403;
       throw error;
     }
@@ -140,11 +133,14 @@ exports.changePassword = async (req, res, next) => {
 exports.updateProfile = async (req, res, next) => {
   try {
     const { email, name } = req.body;
-    
+
     // Check if email is being updated and is unique
     if (email) {
       const existingUser = await User.findOne({ email });
-      if (existingUser && existingUser._id.toString() !== req.user._id.toString()) {
+      if (
+        existingUser &&
+        existingUser._id.toString() !== req.user._id.toString()
+      ) {
         const error = new Error('Email already in use');
         error.statusCode = 409;
         throw error;
@@ -156,9 +152,9 @@ exports.updateProfile = async (req, res, next) => {
     if (email) user.email = email;
     await user.save();
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: 'Profile updated',
-      user: { name: user.name, email: user.email }
+      user: { name: user.name, email: user.email },
     });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
