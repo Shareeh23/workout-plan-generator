@@ -2,17 +2,8 @@ const express = require('express');
 const { body } = require('express-validator');
 const adminController = require('../controllers/admin');
 const isAdmin = require('../middleware/is-admin');
-const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
-
-// Rate limiting for admin routes
-const adminLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
-  message: 'Too many requests from this IP, please try again later'
-});
-router.use(adminLimiter);
 
 // User management
 router.get('/users', isAdmin, adminController.getUsers);
