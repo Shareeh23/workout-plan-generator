@@ -64,9 +64,9 @@ app.use((error, req, res, next) => {
 app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
-  const message = error.message;
+  const message = error.message || 'Internal Server Error';
   const data = error.data;
-  res.status(status).json({ message: message, data: data });
+  res.status(status).json({ statusCode: status, message: message, data: data });
 });
 
 mongoose

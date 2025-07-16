@@ -78,7 +78,7 @@ const generateWorkoutFromAI = async (archetype, trainingDays) => {
   }
 };
 
-exports.generatePlan = async (req, res, next) => {
+exports.generateWorkoutPlan = async (req, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -183,6 +183,36 @@ exports.deactivatePlan = async (req, res, next) => {
   }
 };
 
+exports.logWorkout = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed');
+      error.statusCode = 400;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const { sessionOrder, exercises } = req.body;
+    const userId = req.userId;
+
+    const workoutLog = new WorkoutLog({
+      user: userId,
+      sessionOrder,
+      exercises,
+    });
+
+    await workoutLog.save();
+
+    res.status(201).json({
+      message: 'Workout logged successfully',
+      logId: workoutLog._id,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.createLog = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -211,7 +241,7 @@ exports.getLogs = async (req, res, next) => {
     res.json(logs);
   } catch (error) {
     next(error);
-  }
+  } 
 };
 
 exports.updateLog = async (req, res, next) => {
@@ -375,6 +405,15 @@ exports.getWorkoutSession = async (req, res, next) => {
       status: 'success',
       data: session,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getWorkoutHistory = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    res.json(user.workoutHistory || []);
   } catch (error) {
     next(error);
   }
