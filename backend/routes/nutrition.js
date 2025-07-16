@@ -1,7 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const nutritionController = require('../controllers/nutrition');
-const isAuth = require('../middleware/auth');
+const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
