@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 const { WorkoutGenerationError } = require('./utils/errors');
 
 const authRoutes = require('./routes/auth');
@@ -17,7 +18,17 @@ const MONGO_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_P
 
 const PORT = process.env.PORT || 5000;
 
+// Admin rate limiting
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  message: 'Too many requests from this IP',
+  skip: req => !req.path.startsWith('/admin')
+});
+
 app.use(passport.initialize());
+
+app.use(adminLimiter);
 
 app.use(
   cors({
