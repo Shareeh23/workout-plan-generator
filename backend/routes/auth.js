@@ -1,11 +1,10 @@
 const express = require('express');
 const { body } = require('express-validator');
-const User = require('../models/user');
 const authController = require('../controllers/auth');
 const isAuth = require('../middleware/is-auth');
 const passport = require('passport');
 const checkEmail = require('../middleware/check-email');
-const rejectHtml = require('../middleware/rejectHtml');
+const rejectHtml = require('../middleware/reject-html');
 
 const router = express.Router();
 

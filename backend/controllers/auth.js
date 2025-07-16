@@ -3,7 +3,7 @@ require('dotenv').config();
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const { generateAuthResponse } = require('../utils/auth-utils');
+const { generateAuthResponse } = require('../utils/auth-util');
 
 exports.signup = async (req, res, next) => {
   try {
