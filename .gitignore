@@ -1,2 +1,18 @@
-node_modules/
-.env
+# Root level .gitignore
+node_modules/       # Ignore all node_modules (workspaces handle their own)
+.env                # Environment variables
+.DS_Store           # macOS metadata
+.idea/              # JetBrains IDE
+.vscode/            # VS Code (except extensions.json)
+*.log               # Log files
+dist/               # Frontend build
+dist-ssr/           # SSR build (if applicable)
+*.local             # Local dev files
+
+# Backend specific
+backend/uploads/    # File uploads
+backend/logs/       # Server logs
+
+# Frontend specific
+frontend/.env       # Frontend env vars
+frontend/dist/      # Explicit frontend build
