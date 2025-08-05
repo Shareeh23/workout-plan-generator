@@ -11,11 +11,6 @@ const workoutPlanSchema = new mongoose.Schema({
     enum: ['ai', 'predefined'],
     required: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    required: true,
-  },
   planName: {
     type: String,
     required: true,
@@ -24,6 +19,10 @@ const workoutPlanSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  /* imageUrl: {
+    type: String,
+    required: true,
+  }, */
   prioritizedMuscles: {
     type: [String],
     required: true,
@@ -59,10 +58,10 @@ const workoutPlanSchema = new mongoose.Schema({
       requestParams: {
         planName: String,
         trainingDays: Number
-      }
+      },
     },
     default: {}
   },
-});
+}, { timestamps: true });
 
 module.exports = workoutPlanSchema;

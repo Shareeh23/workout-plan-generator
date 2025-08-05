@@ -1,0 +1,221 @@
+/* Base Form Styles */
+.workout-plan-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+  background: var(--black-25);
+  border-radius: 1.2rem;
+  padding: 2.4rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Tabs */
+.form-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.basic-info,
+.sessions-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.6rem;
+}
+
+.sessions-info {
+  gap: 2.4rem;
+}
+
+.workout-plan-fields {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 1.6rem;
+}
+
+.workout-plan-field {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.2rem;
+  flex: 1;
+  width: 100%;
+  min-height: 6rem;
+  padding: 1.2rem;
+  border-radius: 0.4rem;
+  background-color: var(--indigo-75);
+}
+
+.workout-plan-label {
+  width: auto;
+  color: var(--ivory-cream-100) !important;
+}
+
+.workout-plan-input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background-color: var(--ivory-cream-75);
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  color: var(--indigo-100);
+  transition: all 0.2s ease-in-out;
+}
+
+.workout-plan-input:focus {
+  outline: none;
+  background-color: var(--lime-green);
+  color: var(--indigo-100);
+}
+
+/* Muscle Group Selector */
+.muscle-group-tags {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.muscle-tag {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  background-color: var(--lime-green);
+  border-radius: 0.4rem;
+  color: var(--indigo-100) !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.muscle-tag:hover {
+  background-color: var(--gray-100);
+}
+
+.muscle-tag.selected {
+  background-color: var(--indigo-100);
+  color: var(--ivory-cream-100) !important;
+}
+
+/* Session and Exercise Forms */
+.session-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.exercise-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+  background: var(--gray-50);
+  border-radius: 0.6rem;
+  padding: 1.2rem;
+  border: 1px solid var(--gray-100);
+}
+
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.exercises-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+/* Button Styling */
+.add-btn {
+  width: auto;
+  color: var(--sea-green) !important;
+  gap: 0.8rem;
+}
+
+.remove-btn:hover {
+  color: var(--tangerine-100) !important;
+}
+
+.remove-btn:active {
+  color: var(--tangerine-100) !important;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.save-btn,
+.cancel-btn {
+  height: 40px !important;
+  border-radius: 0.8rem !important;
+}
+
+.cancel-btn {
+  color: var(--indigo-100) !important;
+  border-color: var(--indigo-100) !important;
+}
+
+.cancel-btn:hover {
+  background-color: transparent !important;
+  color: var(--indigo-100) !important;
+  border: 1px solid var(--gray-100) !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-row .form-group {
+    width: 100%;
+  }
+
+  .session-form,
+  .exercise-form {
+    padding: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  min-height: 200px;
+}
+
+/* Error State */
+.error {
+  color: var(--red-100);
+  background-color: var(--red-10);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  border: 1px solid var(--red-20);
+}

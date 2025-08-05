@@ -1,3 +1,4 @@
+const path = require('path');
 require('dotenv').config();
 require('./config/passport');
 const express = require('express');
@@ -20,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 
 // Admin rate limiting
 const adminLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 30 * 60 * 1000, // 30 minutes
   max: 100,
   message: 'Too many requests from this IP',
   skip: req => !req.path.startsWith('/admin')
@@ -33,13 +34,12 @@ app.use(adminLimiter);
 app.use(
   cors({
     origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
+    exposedHeaders: ['Content-Disposition'],
   })
 );
-
-app.use(express.json()); // Important for parsing incoming JSON bodies
 
 // Fallback manual CORS configuration in case `cors()` middleware causes issues
 
@@ -52,6 +52,20 @@ app.use(express.json()); // Important for parsing incoming JSON bodies
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 }); */
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.json());
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+  setHeaders: (res) => {
+    res.set('Content-Disposition', 'inline');
+    // Prevent content sniffing
+    res.set('X-Content-Type-Options', 'nosniff');
+  }
+}));
 
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
@@ -67,7 +81,6 @@ app.use((error, req, res, next) => {
       details: error.details,
     });
   }
-
   // Pass to default error handler
   next(error);
 });

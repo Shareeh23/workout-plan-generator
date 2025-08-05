@@ -1,0 +1,93 @@
+.calendar-section-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+  width: 100%;
+}
+
+.calendar-section-heading {
+  color: var(--lime-green) !important;
+}
+
+.calendar-section-loading,
+.calendar-section-error {
+  font-size: var(--body-lg);
+  color: var(--black-75);
+  padding: 1rem 0;
+}
+
+.calendar-root {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: auto;
+}
+
+.calendar-nav .btn-fab-md {
+  color: var(--indigo-100) !important;
+  background-color: var(--ivory-cream-100) !important;
+  transition: 0.2s all ease;
+}
+
+.calendar-nav .btn-fab-md:hover {
+  color: var(--ivory-cream-100) !important;
+  background-color: var(--tangerine-100) !important;
+}
+
+.calendar-nav h4 {
+  color: var(--ivory-cream-100) !important;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.calendar-table th {
+  color: var(--ivory-cream-75) !important;
+}
+
+.calendar-cell {
+  width: 2.5rem;
+  height: 2.5rem;
+  text-align: center;
+  font-size: var(--body-lg);
+  font-family: var(--font-body);
+  color: var(--ivory-cream-100);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+}
+
+.calendar-cell:hover {
+  color: var(--indigo-100);
+  background: var(--lime-green);
+}
+
+.calendar-completed-day {
+  background: var(--lime-green);
+  color: var(--indigo-100);
+  font-weight: var(--font-bold);
+}
+
+.calendar-selected-day {
+  background: var(--tangerine-100);
+  color: var(--ivory-cream-100);
+  font-weight: var(--font-bold);
+}

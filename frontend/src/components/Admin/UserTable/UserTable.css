@@ -1,0 +1,72 @@
+.table-container {
+  background: var(--gray-100);
+  border-radius: 0.8rem;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+  padding: 1.2rem 1.6rem;
+  text-align: left;
+}
+
+.users-table th {
+  background-color: var(--indigo-75);
+  color: var(--ivory-cream-100);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: var(--body-xs);
+  letter-spacing: 0.5px;
+}
+
+.users-table td {
+  border-bottom: 1px solid var(--ivory-cream-50);
+}
+
+.th-text {
+  color: var(--ivory-cream-100) !important;
+}
+
+/* Role Badges */
+.role-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 1.6rem;
+  text-transform: capitalize;
+}
+
+.role-badge.admin {
+  background-color: var(--warm-beige-100);
+  color: var(--tangerine-100);
+}
+
+.role-badge.user {
+  background-color: var(--warm-beige-100);
+  color: var(--sea-green);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .users-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .action-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

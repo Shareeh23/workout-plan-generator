@@ -17,24 +17,30 @@ const userSchema = new mongoose.Schema({
   workoutPlan: workoutPlanSchema,
   workoutHistory: [
     {
-      planRef: { 
-        type: mongoose.Schema.Types.ObjectId,
-        required: true 
-      },
-      planName: { type: String },
-      createdAt: { type: Date, default: Date.now },
-      completedAt: { type: Date },
-      programTheme: { type: String }
+    planRef: {
+      type: mongoose.Schema.Types.ObjectId,
+        required: true,
+    },
+    planName: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    completedAt: { type: Date },
+    programTheme: { type: String },
     },
   ],
   nutritionProfile: {
     type: nutritionProfileSchema,
-    required: false
+    required: false,
   },
   isAdmin: {
     type: Boolean,
-    default: false
+    default: false,
+  },
+  lastActivity: {
+    type: Date,
+    default: Date.now
   }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('User', userSchema);

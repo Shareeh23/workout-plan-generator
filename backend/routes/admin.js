@@ -1,17 +1,36 @@
 const express = require('express');
 const { body } = require('express-validator');
 const adminController = require('../controllers/admin');
+const isAuth = require('../middleware/is-auth');
 const isAdmin = require('../middleware/is-admin');
+const upload = require('../utils/fileUpload');
 
 const router = express.Router();
 
-// User management
-router.get('/users', isAdmin, adminController.getUsers);
+const parsePlanData = (req, res, next) => {
+  if (req.body.planData) {
+    try {
+      const planData = JSON.parse(req.body.planData);
+      // Merge the parsed data into req.body
+      req.body = { ...req.body, ...planData };
+    } catch (error) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid planData format'
+      });
+    }
+  }
+  next();
+};
 
-// Predefined workout plan management
+router.get('/users', isAuth, isAdmin, adminController.getUsers);
+
 router.post(
   '/plans',
+  isAuth,
   isAdmin,
+  upload.single('image'),
+  parsePlanData,
   [
     // Core fields
     body('planName')
@@ -55,17 +74,28 @@ router.post(
     body('sessions.*.exercises.*.sets')
       .isInt({ min: 1 })
       .withMessage('Minimum 1 set required'),
-    body('sessions.*.exercises.*.reps')
-      .isInt({ min: 1 })
-      .withMessage('Minimum 1 rep required'),
+      body('sessions.*.exercises.*.repRange')
+      .isString()
+      .trim()
+      .notEmpty()
+      .withMessage('Rep Range is required')
+      .custom((value) => {
+        // Check if it's a single number or a range (e.g., "8" or "8-12")
+        const isValid = /^\d+$/.test(value) || /^\d+\s*-\s*\d+$/.test(value);
+        if (!isValid) {
+          throw new Error('Invalid rep format. Use a number (e.g., "8") or a range (e.g., "8-12")');
+        }
+        return true;
+      }),
   ],
   adminController.createPlan
 );
 
-router.get('/plans', isAdmin, adminController.getPlans);
+router.get('/plans', isAuth, isAdmin, adminController.getPlans);
 
 router.put(
   '/plans/:id',
+  isAuth,
   isAdmin,
   [
     body('planName')
@@ -100,9 +130,9 @@ router.put(
   adminController.updatePlan
 );
 
-router.delete('/plans/:id', isAdmin, adminController.deletePlan);
+router.delete('/plans/:id', isAuth, isAdmin, adminController.deletePlan);
 
 // Audit logs
-router.get('/audit-logs', isAdmin, adminController.getAuditLogs);
+router.get('/audit-logs', isAuth, isAdmin, adminController.getAuditLogs);
 
 module.exports = router;

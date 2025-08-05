@@ -1,0 +1,224 @@
+.home-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+  padding: 2.4rem 6rem;
+  background-color: var(--warm-beige-100);
+}
+
+.home-dashboard {
+  display: flex;
+  flex-direction: row;
+  gap: 2.4rem;
+  width: 100%;
+  height: 100%;
+}
+
+.anterior-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 30%;
+}
+
+.dashboard-sidebar {
+  display: flex;
+  gap: 2.4rem; 
+  height: 100%;
+  width: 45%;
+}
+
+.dashboard-top-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+  flex: 1;
+}
+
+.calendar-section-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  border-radius: 2.4rem;
+  height: 100%;
+  width: auto;
+  background-color: var(--indigo-75);
+}
+
+.dashboard-bottom-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+  width: auto;
+  height: auto;
+}
+
+.posterior-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 100%;
+  overflow: hidden;      
+  min-width: 0;          
+}
+
+.anterior-view, .posterior-view, .streak-counter, .motivation-card {
+  min-width: 0;
+  min-height: 0;
+}
+
+.dashboard-sidebar,
+.dashboard-top-section,
+.dashboard-bottom-section {
+  min-width: 0;
+  min-height: 0;
+}
+
+.color-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2.4rem;
+  background-color: var(--indigo-75);
+  border-radius: 2.4rem;
+  width: 100%;
+  height: auto;
+}
+
+.color-legend h4 {
+  color: var(--lime-green);
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+}
+
+.legend-color.prioritized {
+  background-color: var(--tangerine-100);
+}
+
+.legend-color.neutral {
+  background-color: var(--sea-green);
+}
+
+.legend-color.weak {
+  background-color: var(--indigo-50);
+}
+
+.legend-item span:last-child {
+  color: var(--ivory-cream-100);
+}
+
+/* Character Archetype Details */
+.archetype-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  background-color: var(--indigo-75);
+  border-radius: 2.4rem;
+  padding: 2.4rem;
+  width: auto;
+  height: 100%;
+  color: var(--ivory-cream-100);
+}
+
+.program-detail-heading {
+  color: var(--lime-green);
+}
+
+.program-detail-metadata {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.detail-item {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.detail-item .label {
+  color: var(--gray-100);
+}
+
+.detail-item .value {
+  color: var(--ivory-cream-100);
+}
+
+/* Motivation Card Styles */
+.motivation-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  background-color: var(--indigo-75);
+  border-radius: 2.4rem;
+  width: 100%;
+  height: auto;
+}
+
+.motivation-card .english {
+  white-space: wrap;
+  color: var(--ivory-cream-100);
+}
+
+.motivation-card .japanese {
+  white-space: wrap;
+  color: var(--lime-green);
+}
+
+.streak-counter {
+  width: 40%;
+  height: 100%;
+}
+
+.upcoming-session-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  width: auto;
+  gap: 2.4rem;
+}
+
+.upcoming-session-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  border-radius: 2.4rem;
+  height: auto;
+  width: auto;
+  background-color: var(--indigo-75);
+}

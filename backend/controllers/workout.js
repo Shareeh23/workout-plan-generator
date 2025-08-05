@@ -5,6 +5,7 @@ const oneRepMaxCalculator = require('../services/oneRepMaxCalculator');
 const { validationResult } = require('express-validator');
 const { WorkoutGenerationError } = require('../utils/errors');
 const WorkoutLog = require('../models/workoutLogSchema');
+const WorkoutPlan = require('../models/workoutPlanModel');
 
 const systemPrompt = `
 You are a knowledgeable personal trainer who generates training plans inspired by fictional character physiques and Natural Hypertrophy's style.
@@ -106,7 +107,7 @@ exports.generateWorkoutPlan = async (req, res, next) => {
 
     if (user.workoutHistory) {
       user.workoutHistory.push({
-        planRef: workoutPlan._id,
+        planRef: user.workoutPlan._id,
         planName: workoutPlan.planName,
         createdAt: workoutPlan.createdAt,
         completedAt: null,
@@ -241,7 +242,7 @@ exports.getLogs = async (req, res, next) => {
     res.json(logs);
   } catch (error) {
     next(error);
-  } 
+  }
 };
 
 exports.updateLog = async (req, res, next) => {
@@ -277,8 +278,18 @@ exports.getPlannedExercises = async (req, res, next) => {
       });
     }
 
-    const session = user.workoutPlan.trainingDays.find(
-      (day) => day.order === Number(req.query.sessionOrder)
+    // Defensive: sessions should be an array
+    const sessions = user.workoutPlan.sessions;
+    if (!Array.isArray(sessions)) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'No sessions found in workout plan',
+      });
+    }
+
+    // Find session by sessionOrder
+    const session = sessions.find(
+      (s) => s.sessionOrder === Number(req.query.sessionOrder)
     );
 
     if (!session) {
@@ -288,9 +299,18 @@ exports.getPlannedExercises = async (req, res, next) => {
       });
     }
 
+    // Map exercises to include only name, sets, repRange
+    const exercises = Array.isArray(session.exercises)
+      ? session.exercises.map(({ name, sets, repRange }) => ({
+          name,
+          sets,
+          repRange,
+        }))
+      : [];
+
     res.json({
       status: 'success',
-      exercises: session.exercises,
+      exercises,
     });
   } catch (error) {
     next(error);
@@ -375,7 +395,7 @@ exports.getWorkoutSession = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         status: 'error',
-        errors: errors.array()
+        errors: errors.array(),
       });
     }
 
@@ -416,5 +436,23 @@ exports.getWorkoutHistory = async (req, res, next) => {
     res.json(user.workoutHistory || []);
   } catch (error) {
     next(error);
+  }
+};
+
+exports.getPredefinedPlans = async (req, res, next) => {
+  try {
+    const plans = await WorkoutPlan.find({ source: 'predefined' })
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
+      
+    res.json({
+      status: 'success',
+      results: plans.length,
+      data: plans,
+    });
+  } catch (err) {
+    next(err);
   }
 };

@@ -36,6 +36,7 @@ exports.oauthGoogle = async (req, res, next) => {
 
   try {
     let user = await User.findOne({ email });
+    const isNewUser = !user;
 
     if (!user) {
       user = new User({ name, email, googleId });
@@ -43,10 +44,15 @@ exports.oauthGoogle = async (req, res, next) => {
     }
 
     const authData = generateAuthResponse(user);
-    res.status(201).json({
-      message: 'User registered successfully',
-      ...authData,
-    });
+
+    // Redirect with token and flags as query params
+    const frontendUrl = new URL('http://localhost:5173/auth/callback');
+    frontendUrl.searchParams.set('token', authData.token);
+    frontendUrl.searchParams.set('isNewUser', isNewUser);
+    frontendUrl.searchParams.set('hasWorkoutPlan', !!user.workoutPlan);
+    frontendUrl.searchParams.set('isAdmin', user.isAdmin || 'false');
+
+    return res.redirect(frontendUrl.toString());
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);
@@ -55,6 +61,14 @@ exports.oauthGoogle = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed.');
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
@@ -82,6 +96,8 @@ exports.login = async (req, res, next) => {
     res.status(200).json({
       message: 'Login successful',
       ...authData,
+      hasWorkoutPlan: !!user.workoutPlan,
+      isNewUser: user.workoutPlan === undefined || user.workoutPlan === null,
     });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 401;
@@ -166,6 +182,33 @@ exports.deleteAccount = async (req, res, next) => {
   try {
     await User.findByIdAndDelete(req.user._id);
     res.status(200).json({ message: 'Account deleted successfully' });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
+};
+
+exports.getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .select('-password -googleId -__v')
+      .lean();
+
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    res.status(200).json({
+      message: 'User profile retrieved successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        // profilePicture: user.profilePicture,
+      }
+    });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
     next(err);

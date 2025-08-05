@@ -1,77 +1,195 @@
-const WorkoutPlan = require('../models/workoutPlanSchema');
+const fs = require('fs');
+const WorkoutPlan = require('../models/workoutPlanModel');
 const User = require('../models/user');
 const AuditLog = require('../models/auditLogSchema');
 const { validationResult } = require('express-validator');
 
-// Create new predefined plan
 exports.createPlan = async (req, res, next) => {
   try {
+    let planData;
+    
+    // Parse the planData if it's a string
+    if (req.body.planData) {
+      try {
+        planData = typeof req.body.planData === 'string' 
+          ? JSON.parse(req.body.planData) 
+          : req.body.planData;
+      } catch (parseError) {
+        console.error('Error parsing planData:', parseError);
+        if (req.file) {
+          fs.unlink(req.file.path, (err) => {
+            if (err) console.error('Error deleting file:', err);
+          });
+        }
+        return res.status(400).json({
+          status: 'error',
+          message: 'Invalid planData format',
+          details: parseError.message
+        });
+      }
+    } else {
+      planData = req.body;
+    }
+
+    // Parse stringified arrays if they exist
+    const parseIfString = (value) => {
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value);
+        } catch (e) {
+          return value;
+        }
+      }
+      return value;
+    };
+
+    // Process arrays to ensure they're actual arrays
+    const processedData = {
+      ...planData,
+      prioritizedMuscles: parseIfString(planData.prioritizedMuscles) || [],
+      neutralPoints: parseIfString(planData.neutralPoints) || [],
+      weakPoints: parseIfString(planData.weakPoints) || [],
+      sessions: parseIfString(planData.sessions) || []
+    };
+
+    // Update req.body with processed data for validation
+    req.body = { ...processedData };
+
+    // Run validation
     const errors = validationResult(req);
+    
     if (!errors.isEmpty()) {
+      if (req.file) {
+        fs.unlink(req.file.path, (err) => {
+          if (err) console.error('Error deleting file:', err);
+        });
+      }
       return res.status(400).json({
         status: 'error',
-        errors: errors.array()
+        message: 'Validation failed',
+        errors: errors.array(),
       });
     }
 
-    const plan = await WorkoutPlan.create({
-      ...req.body,
+    // Check if file is uploaded
+    if (!req.file) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Image file is required'
+      });
+    }
+
+    // Create the workout plan
+    const workoutPlan = new WorkoutPlan({
       source: 'predefined',
-      createdBy: req.user.userId,
+      planName: processedData.planName,
+      programTheme: processedData.programTheme,
+      imageUrl: `/uploads/${req.file.filename}`,
+      prioritizedMuscles: processedData.prioritizedMuscles,
+      neutralPoints: processedData.neutralPoints,
+      weakPoints: processedData.weakPoints,
+      trainingDays: processedData.trainingDays,
+      sessions: processedData.sessions,
       metadata: {
-        lastModified: new Date()
+        lastModified: new Date(),
+        createdBy: req.user.userId || req.user._id,
+        requestParams: {
+          planName: processedData.planName,
+          trainingDays: processedData.trainingDays
+        }
       }
     });
 
-    await AuditLog.create({
-      admin: req.user.userId,
-      action: 'CREATE_PLAN',
-      targetId: plan._id,
-      metadata: { planName: plan.planName }
+    const savedPlan = await workoutPlan.save();
+
+    // Create audit log
+    try {
+      await AuditLog.create({
+        admin: req.user.userId || req.user._id,
+        action: 'CREATE_PLAN',
+        targetId: savedPlan._id,
+        metadata: { 
+          planName: savedPlan.planName,
+          trainingDays: savedPlan.trainingDays
+        }
+      });
+    } catch (auditError) {
+      console.error('Error creating audit log:', auditError);
+    }
+
+    return res.status(201).json({
+      status: 'success',
+      message: 'Workout plan created successfully',
+      data: savedPlan
     });
 
-    res.status(201).json({
-      status: 'success',
-      data: plan
-    });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    console.error('Error in createPlan:', error);
+    
+    // Clean up uploaded file if there was an error
+    if (req.file) {
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error('Error deleting file:', err);
+      });
+    }
   }
+  next(error);
 };
 
-// Get all predefined plans
 exports.getPlans = async (req, res, next) => {
   try {
-    const plans = await WorkoutPlan.find({ source: 'predefined' }).sort({ createdAt: -1 });
+    const plans = await WorkoutPlan.find({ source: 'predefined' }).sort({
+      createdAt: -1,
+    });
     await AuditLog.create({
       admin: req.user.userId,
-      action: 'VIEW_PLANS'
+      action: 'VIEW_PLANS',
     });
     res.json({
       status: 'success',
       results: plans.length,
-      data: plans
+      data: plans,
     });
   } catch (err) {
     next(err);
   }
 };
 
-// Get all users (admin only)
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.find({}, 'name email isAdmin createdAt');
-    
+    const users = await User.find(
+      {},
+      'name email isAdmin createdAt updatedAt lastActivity workoutHistory workoutPlan'
+    )
+      .sort({ createdAt: -1 }) // Sort by creation date, newest first
+      .populate({
+        path: 'workoutPlan',
+        select: 'planName trainingDays createdAt',
+      })
+      .populate({
+        path: 'workoutHistory.planRef',
+        select: 'planName createdAt completedAt',
+      });
+
+    if (!req.user?._id && !req.user?.userId) {
+      throw new Error('No user ID found in request');
+    }
+
+    const adminId = req.user?._id || req.user?.userId;
+
     // Log admin action
     await AuditLog.create({
-      admin: req.user.userId,
-      action: 'VIEW_USERS'
+      admin: adminId,
+      action: 'VIEW_USERS',
+      metadata: {
+        userCount: users.length,
+      },
     });
-    
+
     res.json({
       status: 'success',
       results: users.length,
-      data: users
+      data: users,
     });
   } catch (err) {
     next(err);
@@ -85,15 +203,15 @@ exports.updatePlan = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         status: 'error',
-        errors: errors.array()
+        errors: errors.array(),
       });
     }
 
     const plan = await WorkoutPlan.findOneAndUpdate(
       { _id: req.params.id, source: 'predefined' },
-      { 
+      {
         ...req.body,
-        'metadata.lastModified': new Date() 
+        'metadata.lastModified': new Date(),
       },
       { new: true, runValidators: true }
     );
@@ -101,7 +219,7 @@ exports.updatePlan = async (req, res, next) => {
     if (!plan) {
       return res.status(404).json({
         status: 'error',
-        message: 'Plan not found'
+        message: 'Plan not found',
       });
     }
 
@@ -109,12 +227,12 @@ exports.updatePlan = async (req, res, next) => {
       admin: req.user.userId,
       action: 'UPDATE_PLAN',
       targetId: plan._id,
-      metadata: { changes: req.body }
+      metadata: { changes: req.body },
     });
 
     res.json({
       status: 'success',
-      data: plan
+      data: plan,
     });
   } catch (err) {
     next(err);
@@ -124,15 +242,15 @@ exports.updatePlan = async (req, res, next) => {
 // Delete predefined plan
 exports.deletePlan = async (req, res, next) => {
   try {
-    const plan = await WorkoutPlan.findOneAndDelete({ 
+    const plan = await WorkoutPlan.findOneAndDelete({
       _id: req.params.id,
-      source: 'predefined' 
+      source: 'predefined',
     });
 
     if (!plan) {
       return res.status(404).json({
         status: 'error',
-        message: 'Plan not found'
+        message: 'Plan not found',
       });
     }
 
@@ -140,12 +258,12 @@ exports.deletePlan = async (req, res, next) => {
       admin: req.user.userId,
       action: 'DELETE_PLAN',
       targetId: plan._id,
-      metadata: { planName: plan.planName }
+      metadata: { planName: plan.planName },
     });
 
     res.json({
       status: 'success',
-      data: null
+      data: null,
     });
   } catch (err) {
     next(err);
@@ -156,7 +274,7 @@ exports.deletePlan = async (req, res, next) => {
 exports.getAuditLogs = async (req, res, next) => {
   try {
     const { action, adminId, page = 1, limit = 50 } = req.query;
-    
+
     const query = {};
     if (action) query.action = action;
     if (adminId) query.admin = adminId;
@@ -174,7 +292,7 @@ exports.getAuditLogs = async (req, res, next) => {
       results: count,
       data: logs,
       totalPages: Math.ceil(count / limit),
-      currentPage: page
+      currentPage: page,
     });
   } catch (err) {
     next(err);

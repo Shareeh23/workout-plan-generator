@@ -2,10 +2,18 @@ const mongoose = require('mongoose');
 
 const parseWorkoutPlan = (rawResponse) => {
   try {
-    // Extract the content from OpenAI response
-    const content = typeof rawResponse.choices[0].message.content === 'string' 
-      ? JSON.parse(rawResponse.choices[0].message.content)
-      : rawResponse.choices[0].message.content;
+    let content;
+    const rawContent = rawResponse.choices[0].message.content;
+    
+    try {
+      // Try to parse the content if it's a string
+      content = typeof rawContent === 'string' ? JSON.parse(rawContent) : rawContent;
+    } catch (parseError) {
+      console.error('Failed to parse JSON content:');
+      console.error('Raw content:', rawContent);
+      console.error('Parse error:', parseError.message);
+      throw new Error(`Invalid JSON in AI response: ${parseError.message}`);
+    }
 
     return {
       planId: new mongoose.Types.ObjectId(),
@@ -29,8 +37,13 @@ const parseWorkoutPlan = (rawResponse) => {
         notes: session.Notes,
         exercises: session.Exercises.map(exercise => ({
           name: exercise.Name,
-          sets: exercise.Sets,
-          repRange: exercise.Reps
+          sets: exercise.Sets === '∞' ? 3 : parseInt(exercise.Sets, 10) || 3,
+          repRange: exercise.Reps,
+          alternates: exercise.Alternate ? exercise.Alternate.map(alt => ({
+            name: alt.Name,
+            sets: alt.Sets === '∞' ? 3 : parseInt(alt.Sets, 10) || 3,
+            repRange: alt.Reps
+          })) : []
         }))
       }))
     };

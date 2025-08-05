@@ -17,6 +17,8 @@ router.post(
       .isLength({ max: 50 })
       .withMessage('Archetype cannot exceed 50 characters'),
     body('trainingDays')
+      .notEmpty()
+      .withMessage('Training days is required')
       .isInt({ min: 3, max: 6 })
       .withMessage('Must specify 3-6 training days'),
   ],
@@ -129,5 +131,7 @@ router.post(
 );
 
 router.get('/history', isAuth, workoutController.getWorkoutPlanSummary);
+
+router.get('/predefined-plans', isAuth, workoutController.getPredefinedPlans);
 
 module.exports = router;

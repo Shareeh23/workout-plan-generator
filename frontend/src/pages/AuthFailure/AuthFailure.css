@@ -1,0 +1,97 @@
+.auth-failure-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--indigo-100);
+}
+
+.auth-failure-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem; /* 32px */
+  width: 100%;
+  max-width: 50rem; /* 800px */
+  padding: 2rem; /* 32px */
+  border-radius: 2rem;
+  box-shadow: 0 0.25rem 0.75rem var(--warm-beige-50); /* 0 4px 12px */
+}
+
+.svg-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.auth-failure-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem; /* 64px */
+  width: 100%;
+  padding: 3rem; /* 48px */
+  border-radius: 2rem; /* 32px */
+  background-color: var(--indigo-100);
+  text-align: center;
+}
+
+.auth-failure-content h1 {
+  color: var(--ivory-cream-100);
+}
+
+.error-message {
+  color: var(--tangerine-100);
+  margin: 1.5rem 0; /* 24px */
+  font-size: 1.1rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem; /* 16px */
+  justify-content: center;
+}
+
+.action-buttons a {
+  text-decoration: none;
+}
+
+.action-buttons a:hover {
+  text-decoration: none;
+}
+
+.auth-failure-container .btn-primary-md:hover {
+  background-color: var(--lime-green) !important;
+  color: var(--indigo-100) !important;
+}
+
+.auth-failure-container .btn-secondary-md {
+  background-color: transparent !important;
+  border-color: var(--ivory-cream-100) !important;
+  color: var(--ivory-cream-100) !important;
+}
+
+.auth-failure-container .btn-secondary-md:hover {
+  border-color: var(--lime-green) !important;
+  color: var(--lime-green) !important;
+}
+
+.auth-warning-icon {
+  width: 16rem;
+  height: 16rem;
+  animation: subtle-float 3s ease-in-out infinite;
+}
+
+@keyframes subtle-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 0 var(--tangerine-25));
+  }
+  50% {
+    transform: translateY(-0.5rem) scale(1.02);
+    filter: drop-shadow(0 0 8px var(--tangerine-50));
+  }
+}

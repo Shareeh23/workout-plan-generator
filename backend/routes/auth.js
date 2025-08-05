@@ -20,7 +20,7 @@ router.get(
   '/signup/google/callback',
   passport.authenticate('google', {
     session: false,
-    failureRedirect: '/',
+    failureRedirect: 'http://localhost:5173/auth-failure?message=Google+login+failed',
     failureMessage: 'Google login failed - please try again',
   }),
   authController.oauthGoogle
@@ -70,13 +70,14 @@ router.put(
       .isString()
       .withMessage('Name must be a string')
       .bail()
+      .notEmpty()
+      .withMessage('Name is required')
+      .bail()
       .matches(/^[a-zA-Z0-9 \-'.,]+$/)
       .withMessage('Name contains invalid characters')
       .bail()
       .trim()
-      .escape()
-      .notEmpty()
-      .withMessage('Name is required'),
+      .escape(),
     checkEmail,
   ],
   authController.signup
@@ -171,13 +172,14 @@ router.patch(
       .isString()
       .withMessage('Name must be a string')
       .bail()
+      .notEmpty()
+      .withMessage('Name cannot be empty')
+      .bail()
       .matches(/^[a-zA-Z0-9 \-'.,]+$/)
       .withMessage('Name contains invalid characters')
       .bail()
       .trim()
-      .escape()
-      .notEmpty()
-      .withMessage('Name cannot be empty'),
+      .escape(),
   ],
   authController.updateProfile
 );
@@ -196,5 +198,7 @@ router.delete(
   ],
   authController.deleteAccount
 );
+
+router.get('/profile', isAuth, authController.getUserProfile);
 
 module.exports = router;
