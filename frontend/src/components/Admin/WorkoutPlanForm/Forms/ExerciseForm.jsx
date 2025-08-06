@@ -39,6 +39,7 @@ export const ExerciseForm = ({ exercise, index, onChange, onRemove }) => {
             type="text"
             value={exercise.name}
             onChange={(e) => onChange('name', e.target.value)}
+            placeholder='e.g., Bench Press'
             className="workout-plan-input"
             required
           />
@@ -67,8 +68,7 @@ export const ExerciseForm = ({ exercise, index, onChange, onRemove }) => {
           />
         </div>
       </div>
-      
-      {/* Alternate Exercises */}
+
       <div className="alternates-section">
         {exercise.alternates?.map((alt, altIndex) => (
           <div key={altIndex} className="alternate-exercise">
@@ -79,8 +79,8 @@ export const ExerciseForm = ({ exercise, index, onChange, onRemove }) => {
                   type="text"
                   value={alt.name}
                   onChange={(e) => updateAlternate(altIndex, 'name', e.target.value)}
+                  placeholder='e.g., Chest Flies'
                   className="workout-plan-input"
-                  placeholder="Alternate exercise name"
                   required
                 />
               </div>

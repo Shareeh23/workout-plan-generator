@@ -85,7 +85,7 @@
 
 .strong-points, .neutral-points, .weak-points {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: flex-start;
   gap: 1.6rem;
   width: 100%;

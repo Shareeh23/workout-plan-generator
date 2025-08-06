@@ -71,6 +71,15 @@
   color: var(--indigo-100);
 }
 
+.alternates-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  gap: 0.8rem;
+}
+
 /* Muscle Group Selector */
 .muscle-group-tags {
   display: flex;

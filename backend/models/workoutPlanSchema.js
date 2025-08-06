@@ -19,10 +19,10 @@ const workoutPlanSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  /* imageUrl: {
+  imageUrl: {
     type: String,
     required: true,
-  }, */
+  },
   prioritizedMuscles: {
     type: [String],
     required: true,
