@@ -9,6 +9,7 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-container">
+        {/* This should be a component */}
         {message.text && (
           <div
             className={`toast-message ${message.type}`}
@@ -16,7 +17,7 @@ export default function LoginPage() {
             aria-live="assertive"
             aria-atomic="true"
           >
-            <span>{message.text}</span>
+            <span className="text-md">{message.text}</span>
             <button
               onClick={() => setMessage({ text: "", type: "" })}
               aria-label="Close"

@@ -75,14 +75,14 @@
   height: 35%;
 }
 
-.btn-primary-md,
-.btn-secondary-md {
+.login-btn,
+.google-btn {
   height: 48px !important;
   font-size: var(--button-lg) !important;
   border-radius: 0.5rem !important;
 }
 
-.btn-secondary-md {
+.google-btn {
   display: flex;
   flex-direction: row;
   align-items: center;

@@ -32,7 +32,7 @@ export default function AuthCallback() {
         if (isAdmin) {
           navigate("/admin");
         } else {
-          navigate(isNewUser || !hasWorkoutPlan ? "/workout-generation" : "/");
+          navigate(isNewUser || !hasWorkoutPlan ? "/select-plan" : "/");
         }
       }, 3000);
     } else {

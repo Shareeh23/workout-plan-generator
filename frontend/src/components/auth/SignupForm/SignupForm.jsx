@@ -32,7 +32,7 @@ export default function SignupForm({ setMessage }) {
         type: "success",
       });
       setTimeout(() => {
-        window.location.href = "/workout-generation";
+        window.location.href = "/select-plan";
       }, 1500);
     } catch (error) {
       setMessage({

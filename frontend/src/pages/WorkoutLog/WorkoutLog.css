@@ -1,0 +1,201 @@
+.workout-logs-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4rem;
+  padding: 2.4rem 6rem;
+  min-height: 100vh;
+  overflow-y: auto;
+  background-color: var(--warm-beige-100);
+}
+
+/* Main content container */
+.workout-logs-container {
+  display: flex;
+  gap: 2.5rem;
+  width: 100%;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+/* Session form and logs container */
+.session-form,
+.previous-logs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  background: var(--ivory-cream-100);
+  padding: 2.4rem;
+  border-radius: 1.6rem;
+  box-shadow: var(--shadow-md);
+  height: fit-content;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border: 1px solid var(--black-25);
+}
+
+.previous-logs {
+  gap: 2.4rem;
+}
+
+/* Exercise selection */
+
+.exercise-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 2.4rem;
+}
+
+.exercise-selection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1.6rem;
+}
+
+.save-workout-btn {
+  background-color: var(--sea-green) !important;
+}
+
+.save-workout-btn:hover {
+  background-color: var(--indigo-75) !important;
+}
+
+/* Exercise list */
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  width: 100%;
+}
+
+/* Log navigation */
+
+.log-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--indigo-25);
+}
+
+.icon-button {
+  color: var(--ivory-cream-100);
+  padding: 0.4rem;
+}
+
+.log-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 1.6rem;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.log-date {
+  background: var(--sea-green);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.4rem;
+  color: var(--ivory-cream-100) !important;
+}
+
+/* Log exercises */
+
+.log-exercises {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+
+/* Empty states */
+.no-exercises,
+.no-log {
+  color: var(--text-secondary, #666);
+  text-align: center;
+  padding: 2rem 1rem;
+  background: var(--bg-secondary, #f5f5f5);
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+/* Responsive design */
+/* Responsive design */
+@media (max-width: 992px) {
+  .workout-logs-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .workout-logs-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .session-form,
+  .previous-logs {
+    padding: 1.5rem;
+  }
+}
+
+/* Animation for exercise items */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exercise-log {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Previous logs specific */
+.previous-logs {
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+}
+
+/* Scrollbar styling */
+.previous-logs::-webkit-scrollbar {
+  width: 6px;
+}
+
+.previous-logs::-webkit-scrollbar-track {
+  background: var(--bg-secondary, #f5f5f5);
+  border-radius: 10px;
+}
+
+.previous-logs::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.previous-logs::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

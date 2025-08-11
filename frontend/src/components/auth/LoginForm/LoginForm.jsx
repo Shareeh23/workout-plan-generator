@@ -81,12 +81,12 @@ export default function LoginForm({ setMessage }) {
           </div>
         </div>
       </div>
-      <button type="submit" disabled={isLoading} className="btn-primary-md">
+      <button type="submit" disabled={isLoading} className="login-btn btn-primary-md">
         {isLoading ? "Logging in..." : "Login"}
       </button>
       <button
         type="button"
-        className="btn-secondary-md"
+        className="google-btn btn-secondary-md"
         onClick={handleGoogleAuth}
       >
         <FcGoogle /> Continue with Google

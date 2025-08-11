@@ -1,0 +1,32 @@
+/* frontend/src/components/WorkoutLog/ExerciseLog.css */
+.log-exercise-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  width: 100%;
+  border: 2px solid var(--indigo-75);
+  border-radius: 0.4rem;
+  padding: 1.2rem;
+  background-color: var(--tangerine-25);
+}
+
+.exercise-name, .exercise-sets {
+  flex: 1;
+}
+
+.exercise-sets {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 0.8rem;
+}
+
+.exercise-set {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: inherit;
+} 

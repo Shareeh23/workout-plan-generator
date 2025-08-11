@@ -1,0 +1,127 @@
+.set-form-container {
+  background: var(--ivory-cream-100);
+  border-radius: 1.6rem;
+  box-shadow: var(--shadow-md);
+  padding: 1.6rem;
+  width: 60%;
+  margin: 0 auto;
+  border: 1px solid var(--black-25);
+  transition: all 0.3s ease;
+}
+
+.set-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--black-25);
+  position: relative;
+}
+
+.close-btn-icon {
+  padding: 0.4rem;
+  height: 100%;
+  width: 100%;
+}
+
+.set-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.sets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  list-style: none;
+}
+
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 60px;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--indigo-75);
+}
+
+.set-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  white-space: nowrap;
+  color: var(--ivory-cream-100) !important;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0.8rem;
+}
+
+.input input {
+  width: 100%;
+  padding: 12px 0px;
+}
+
+.input label {
+  padding-top: 0px;
+}
+
+.input label {
+  color: var(--ivory-cream-100);
+}
+
+.input input {
+  border: none;
+  background-color: var(--warm-beige-25) !important;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  color: var(--ivory-cream-100);
+  transition: all 0.2s ease-in-out;
+}
+
+.input input:focus {
+  outline: none;
+  background-color: var(--lime-green) !important;
+  color: var(--indigo-100) !important;
+}
+
+.remove-btn {
+  height: auto !important;
+  width: 4rem !important;
+}
+
+.remove-btn-icon {
+  padding: 0.2rem;
+}
+
+.button-groups {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: inherit;
+}
+
+.add-set-btn {
+  gap: 0.8rem;
+  border-color: var(--indigo-100) !important;
+  color: var(--indigo-100) !important;
+}
+
+.add-set-btn:hover {
+  background-color: transparent !important;
+}
+
+.save-set-btn {
+  background-color: var(--sea-green) !important;
+}
