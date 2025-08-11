@@ -9,9 +9,11 @@ import SignupPage from "./pages/SignupPage/SignupPage";
 import AuthCallback from "./pages/AuthCallback/AuthCallback";
 import AuthFailure from "./pages/AuthFailure/AuthFailure";
 import WorkoutPlan from "./pages/WorkoutPlan/WorkoutPlan";
+import PlanSelection from './pages/PlanSelection/PlanSelection';
 import Home from "./pages/Home/Home";
 import Library from "./pages/Library/Library";
 import Admin from "./pages/Admin/Admin";
+import WorkoutLog from "./pages/WorkoutLog/WorkoutLog";
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requireAdmin = false }) => {
@@ -45,6 +47,15 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/auth-failure" element={<AuthFailure />} />
+        <Route path="/select-plan" element={<PlanSelection />} />
+        <Route
+          path="/workout-log"
+          element={
+            <ProtectedRoute>
+              <WorkoutLog />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/workout-generation"
           element={

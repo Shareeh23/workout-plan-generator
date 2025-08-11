@@ -1,11 +1,13 @@
-const axios = require('axios');
+const mongoose = require('mongoose');
 const User = require('../models/user');
-const { parseWorkoutPlan } = require('../utils/workoutParser');
-const oneRepMaxCalculator = require('../services/oneRepMaxCalculator');
+const WorkoutPlan = require('../models/workoutPlanModel');
+const WorkoutLog = require('../models/workoutLogSchema');
+
 const { validationResult } = require('express-validator');
 const { WorkoutGenerationError } = require('../utils/errors');
-const WorkoutLog = require('../models/workoutLogSchema');
-const WorkoutPlan = require('../models/workoutPlanModel');
+const { parseWorkoutPlan } = require('../utils/workoutParser');
+const oneRepMaxCalculator = require('../services/oneRepMaxCalculator');
+const axios = require('axios');
 
 const systemPrompt = `
 You are a knowledgeable personal trainer who generates training plans inspired by fictional character physiques and Natural Hypertrophy's style.
@@ -122,6 +124,60 @@ exports.generateWorkoutPlan = async (req, res, next) => {
   }
 };
 
+// In workout.js controller
+exports.assignPredefinedPlan = async (req, res, next) => {
+  try {
+    const { planId } = req.params;
+    const userId = req.user.id;
+
+    // Find the user and the predefined plan
+    const [user, predefinedPlan] = await Promise.all([
+      User.findById(userId),
+      WorkoutPlan.findById(planId).lean(),
+    ]);
+
+    if (!predefinedPlan) {
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Workout plan not found' });
+    }
+
+    user.workoutPlan = {
+      ...predefinedPlan,
+      _id: new mongoose.Types.ObjectId(),
+      source: 'predefined',
+      isActive: true,
+      metadata: {
+        ...predefinedPlan.metadata,
+        originalPlanId: planId,
+        assignedAt: new Date(),
+      },
+    };
+
+    delete user.workoutPlan.__v;
+    if (!user.workoutHistory) {
+      user.workoutHistory = [];
+    }
+
+    user.workoutHistory.push({
+      planRef: planId,
+      planName: predefinedPlan.planName,
+      programTheme: predefinedPlan.programTheme,
+      startedAt: new Date(),
+    });
+
+    await user.save();
+
+    res.json({
+      status: 'success',
+      message: 'Workout plan assigned successfully',
+      workoutPlan: predefinedPlan,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // 1RM calculation endpoint
 exports.calculateOneRepMax = async (req, res, next) => {
   try {
@@ -168,7 +224,7 @@ exports.deactivatePlan = async (req, res, next) => {
       }
     }
 
-    user.workoutPlan = undefined; // Remove the entire plan
+    user.workoutPlan = undefined;
     await user.save();
 
     res.json({
@@ -194,13 +250,35 @@ exports.logWorkout = async (req, res, next) => {
       throw error;
     }
 
+    console.log('Authenticated user:', req.user); // Debug log
+    
+    if (!req.user || !req.user._id) {
+      const error = new Error('User authentication failed');
+      error.statusCode = 401;
+      throw error;
+    }
+
     const { sessionOrder, exercises } = req.body;
-    const userId = req.userId;
+
+    console.log('Creating workout log with data:', { // Debug log
+      user: req.user._id,
+      sessionOrder,
+      exercises: exercises.map(ex => ({
+        name: ex.name,
+        performedSets: ex.performedSets
+      }))
+    });
 
     const workoutLog = new WorkoutLog({
-      user: userId,
-      sessionOrder,
-      exercises,
+      userId: req.user._id,
+      sessionOrder: sessionOrder || 1,
+      exercises: exercises.map(exercise => ({
+        name: exercise.name,
+        performedSets: exercise.performedSets.map(set => ({
+          weight: parseFloat(set.weight) || 0,
+          reps: parseInt(set.reps) || 0
+        }))
+      }))
     });
 
     await workoutLog.save();
@@ -208,8 +286,13 @@ exports.logWorkout = async (req, res, next) => {
     res.status(201).json({
       message: 'Workout logged successfully',
       logId: workoutLog._id,
+      data: workoutLog
     });
   } catch (err) {
+    console.error('Error in logWorkout:', err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
     next(err);
   }
 };
@@ -278,7 +361,6 @@ exports.getPlannedExercises = async (req, res, next) => {
       });
     }
 
-    // Defensive: sessions should be an array
     const sessions = user.workoutPlan.sessions;
     if (!Array.isArray(sessions)) {
       return res.status(404).json({
@@ -287,7 +369,6 @@ exports.getPlannedExercises = async (req, res, next) => {
       });
     }
 
-    // Find session by sessionOrder
     const session = sessions.find(
       (s) => s.sessionOrder === Number(req.query.sessionOrder)
     );
@@ -299,7 +380,6 @@ exports.getPlannedExercises = async (req, res, next) => {
       });
     }
 
-    // Map exercises to include only name, sets, repRange
     const exercises = Array.isArray(session.exercises)
       ? session.exercises.map(({ name, sets, repRange }) => ({
           name,
@@ -446,7 +526,7 @@ exports.getPredefinedPlans = async (req, res, next) => {
         createdAt: -1,
       })
       .lean();
-      
+
     res.json({
       status: 'success',
       results: plans.length,

@@ -41,47 +41,6 @@ router.post(
 
 router.post('/deactivate', isAuth, workoutController.deactivatePlan);
 
-router.post(
-  '/logs',
-  isAuth,
-  [
-    body('sessionOrder')
-      .optional()
-      .isInt({ min: 1 })
-      .withMessage('Session order must be at least 1'),
-    body('exercises')
-      .isArray({ min: 1 })
-      .withMessage('At least one exercise required'),
-    body('exercises.*.name').notEmpty().withMessage('Exercise name required'),
-    body('exercises.*.performedSets')
-      .isArray({ min: 1 })
-      .withMessage('At least one set required'),
-    body('exercises.*.performedSets.*.weight')
-      .isFloat({ min: 0 })
-      .withMessage('Weight must be positive'),
-    body('exercises.*.performedSets.*.reps')
-      .isInt({ min: 1 })
-      .withMessage('Minimum 1 rep required'),
-  ],
-  workoutController.logWorkout
-);
-
-router.get('/logs', isAuth, workoutController.getLogs);
-
-router.put(
-  '/logs/:logId',
-  isAuth,
-  [
-    body('sessionOrder').optional().isInt({ min: 1 }),
-    body('exercises').optional().isArray({ min: 1 }),
-    body('exercises.*.name').optional().notEmpty(),
-    body('exercises.*.performedSets').optional().isArray({ min: 1 }),
-    body('exercises.*.performedSets.*.reps').optional().isInt({ min: 1 }),
-    body('exercises.*.performedSets.*.weight').optional().isFloat({ min: 0 }),
-  ],
-  workoutController.updateLog
-);
-
 router.get(
   '/planned-exercises',
   isAuth,
@@ -114,24 +73,56 @@ router.get(
   workoutController.getWorkoutSession
 );
 
+router.get('/predefined-plans', isAuth, workoutController.getPredefinedPlans);
+
 router.post(
-  '/log',
+  '/predefined/:planId/assign',
+  isAuth,
+  workoutController.assignPredefinedPlan
+);
+
+// TODO: Logs routes should be on their own page
+
+router.get('/logs', isAuth, workoutController.getLogs);
+
+router.post(
+  '/logs',
   isAuth,
   [
-    body('workoutId')
-      .notEmpty()
-      .withMessage('Workout ID is required')
-      .isMongoId()
-      .withMessage('Invalid workout ID format'),
+    body('sessionOrder')
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage('Session order must be at least 1'),
     body('exercises')
       .isArray({ min: 1 })
-      .withMessage('At least 1 exercise must be logged'),
+      .withMessage('At least one exercise required'),
+    body('exercises.*.name').notEmpty().withMessage('Exercise name required'),
+    body('exercises.*.performedSets')
+      .isArray({ min: 1 })
+      .withMessage('At least one set required'),
+    body('exercises.*.performedSets.*.weight')
+      .isFloat({ min: 0 })
+      .withMessage('Weight must be positive'),
+    body('exercises.*.performedSets.*.reps')
+      .isInt({ min: 1 })
+      .withMessage('Minimum 1 rep required'),
   ],
   workoutController.logWorkout
 );
 
-router.get('/history', isAuth, workoutController.getWorkoutPlanSummary);
-
-router.get('/predefined-plans', isAuth, workoutController.getPredefinedPlans);
+router.put(
+  '/logs/:logId',
+  isAuth,
+  [
+    param('logId').isMongoId().withMessage('Invalid log ID format'),
+    body('sessionOrder').optional().isInt({ min: 1 }),
+    body('exercises').optional().isArray({ min: 1 }),
+    body('exercises.*.name').optional().notEmpty(),
+    body('exercises.*.performedSets').optional().isArray({ min: 1 }),
+    body('exercises.*.performedSets.*.reps').optional().isInt({ min: 1 }),
+    body('exercises.*.performedSets.*.weight').optional().isFloat({ min: 0 }),
+  ],
+  workoutController.updateLog
+);
 
 module.exports = router;
