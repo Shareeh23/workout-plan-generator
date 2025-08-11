@@ -39,6 +39,7 @@
   color: var(--indigo-100) !important;
   background-color: var(--ivory-cream-100) !important;
   transition: 0.2s all ease;
+  padding: 0.4rem !important;
 }
 
 .calendar-nav .btn-fab-md:hover {
@@ -90,4 +91,39 @@
   background: var(--tangerine-100);
   color: var(--ivory-cream-100);
   font-weight: var(--font-bold);
+}
+
+/* Calendar Legend Styles */
+.calendar-legend {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+}
+
+.legend-color.completed {
+  background-color: var(--lime-green);
+}
+
+.legend-color.selected {
+  background-color: var(--tangerine-100);
+}
+
+.legend-item .text-sm {
+  color: var(--ivory-cream-100);
+  font-size: 0.9rem;
 }
