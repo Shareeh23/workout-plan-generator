@@ -69,59 +69,57 @@ const UpcomingSession = () => {
                   No exercises planned.
                 </div>
               ) : (
-                exercises.map((ex, idx) => (
-                  <div
-                    key={ex._id || idx}
-                    className="upcoming-session-col-cell text-lg"
-                  >
+                exercises.flatMap((ex, idx) => [
+                  <div key={`${ex._id || idx}-main`} className="upcoming-session-col-cell text-lg">
                     {ex.name}
-                    {ex.alternates?.map((alt, altIdx) => (
-                      <span key={altIdx} className="alternate-text">
-                        {" "}
-                        / {alt.name}
-                      </span>
-                    ))}
-                  </div>
-                ))
+                  </div>,
+                  ...(ex.alternates?.map((alt, altIdx) => (
+                    <div key={`${ex._id || idx}-alt-${altIdx}`} className="upcoming-session-col-cell text-lg alternate-text">
+                      {alt.name}
+                    </div>
+                  )) || [])
+                ])
               )}
             </div>
             <div className="upcoming-session-col">
               <div className="upcoming-session-col-header text-lg">Sets</div>
               {exercises.length === 0
                 ? null
-                : exercises.map((ex, idx) => (
-                    <div
-                      key={ex._id || idx}
-                      className="upcoming-session-col-cell text-lg"
-                    >
+                : exercises.flatMap((ex, idx) => [
+                    <div key={`${ex._id || idx}-main`} className="upcoming-session-col-cell-set text-lg">
                       {ex.sets}
-                      {ex.alternates?.map((alt, altIdx) => (
-                        <span key={altIdx} className="alternate-text">
-                          {" "}
-                          / {alt.sets}
-                        </span>
-                      ))}
-                    </div>
-                  ))}
+                    </div>,
+                    ...(ex.alternates?.map((alt, altIdx) => (
+                      <div key={`${ex._id || idx}-alt-${altIdx}`} className="upcoming-session-col-cell-set-alt text-lg alternate-text">
+                        {alt.sets}
+                      </div>
+                    )) || [])
+                  ])}
             </div>
             <div className="upcoming-session-col">
               <div className="upcoming-session-col-header text-lg">Reps</div>
               {exercises.length === 0
                 ? null
-                : exercises.map((ex, idx) => (
-                    <div
-                      key={ex._id || idx}
-                      className="upcoming-session-col-cell text-lg"
-                    >
+                : exercises.flatMap((ex, idx) => [
+                    <div key={`${ex._id || idx}-main`} className="upcoming-session-col-cell text-lg">
                       {ex.repRange || ex.reps}
-                      {ex.alternates?.map((alt, altIdx) => (
-                        <span key={altIdx} className="alternate-text">
-                          {" "}
-                          / {alt.repRange || alt.reps}
-                        </span>
-                      ))}
-                    </div>
-                  ))}
+                    </div>,
+                    ...(ex.alternates?.map((alt, altIdx) => (
+                      <div key={`${ex._id || idx}-alt-${altIdx}`} className="upcoming-session-col-cell text-lg alternate-text">
+                        {alt.repRange || alt.reps}
+                      </div>
+                    )) || [])
+                  ])}
+            </div>
+          </div>
+          <div className="color-explanation">
+            <div className="color-explanation-item">
+              <span className="color-swatch main-exercise"></span>
+              <h4 className="exercise-type">Main Exercise</h4>
+            </div>
+            <div className="color-explanation-item">
+              <span className="color-swatch alternate-exercise"></span>
+              <h4 className="exercise-type">Alternative Exercise</h4>
             </div>
           </div>
         </>

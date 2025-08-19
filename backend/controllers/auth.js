@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const path = require('path');
+const fs = require('fs');
 const User = require('../models/user');
 const { generateAuthResponse } = require('../utils/auth-util');
 
@@ -148,29 +150,54 @@ exports.changePassword = async (req, res, next) => {
 
 exports.updateProfile = async (req, res, next) => {
   try {
-    const { email, name } = req.body;
+    const { email, name, currentPassword, newPassword } = req.body;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
 
     // Check if email is being updated and is unique
-    if (email) {
+    if (email && email !== user.email) {
       const existingUser = await User.findOne({ email });
-      if (
-        existingUser &&
-        existingUser._id.toString() !== req.user._id.toString()
-      ) {
+      if (existingUser) {
         const error = new Error('Email already in use');
         error.statusCode = 409;
         throw error;
       }
+      user.email = email;
     }
 
-    const user = await User.findById(req.user._id);
-    if (name) user.name = name;
-    if (email) user.email = email;
+    // Verify current password (already validated as required in routes)
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (!isPasswordValid) {
+      const error = new Error('Current password is incorrect');
+      error.statusCode = 401;
+      throw error;
+    }
+    
+    user.name = name;
+    user.password = await bcrypt.hash(newPassword, 12);
+
     await user.save();
 
+    // Return updated user data (excluding password)
+    const userData = user.toObject();
+    delete userData.password;
+
     res.status(200).json({
-      message: 'Profile updated',
-      user: { name: user.name, email: user.email },
+      message: 'Profile updated successfully',
+      user: {
+        id: userData._id,
+        name: userData.name,
+        email: userData.email,
+      },
     });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
@@ -191,7 +218,7 @@ exports.deleteAccount = async (req, res, next) => {
 exports.getUserProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id)
-      .select('-password -googleId -__v')
+      .select('name email profilePicture')
       .lean();
 
     if (!user) {
@@ -202,12 +229,47 @@ exports.getUserProfile = async (req, res, next) => {
 
     res.status(200).json({
       message: 'User profile retrieved successfully',
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        // profilePicture: user.profilePicture,
+      user,
+    });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
+};
+
+exports.uploadProfilePicture = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      const error = new Error('No image file provided');
+      error.statusCode = 422;
+      throw error;
+    }
+
+    const user = await User.findById(req.user._id);
+    if (user.profilePicture) {
+      const oldImagePath = path.join(__dirname, '..', user.profilePicture);
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlink(oldImagePath, err => {
+          if (err) console.error('Error deleting old profile picture:', err);
+        });
       }
+    }
+
+    const imagePath = '/uploads/' + req.file.filename;
+    user.profilePicture = imagePath;
+    const updatedUser = await user.save();
+
+    const userData = {
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      profilePicture: imagePath
+    };
+
+    res.status(200).json({
+      message: 'Profile picture uploaded successfully',
+      user: userData,
+      imagePath: imagePath
     });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;

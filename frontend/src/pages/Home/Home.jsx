@@ -8,18 +8,14 @@ import Calendar from "../../components/Home/Calender/Calendar";
 import { getWorkoutPlan } from "../../api/workoutApi";
 import "./Home.css";
 
-const Home = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+const Home = ({ user }) => {
   const [plan, setPlan] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login", { replace: true });
-    } else {
-      setIsAuthenticated(true);
     }
     const fetchPlan = async () => {
       try {
@@ -35,35 +31,18 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <Navbar />
+      <Navbar user={user} />
       <div className="home-dashboard">
-        <section className="anterior-view">
-          <AnteriorMuscleModel
-            priorities={{
-              prioritized: plan.prioritizedMuscles || [],
-              neutral: plan.neutralPoints || [],
-              weak: plan.weakPoints || [],
-            }}
-          />
-        </section>
-        <section className="dashboard-sidebar">
-          <div className="dashboard-top-section">
-            <div className="color-legend">
-              <h4>Muscle Priority</h4>
-              <div className="legend-items">
-                <div className="legend-item">
-                  <span className="legend-color prioritized"></span>
-                  <span className="text-lg">Prioritized</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color neutral"></span>
-                  <span className="text-lg">Neutral</span>
-                </div>
-                <div className="legend-item">
-                  <span className="legend-color weak"></span>
-                  <span className="text-lg">Weak Points</span>
-                </div>
-              </div>
+        <section className="right-section">
+          <div className="model-view">
+            <div className="anterior-view">
+              <AnteriorMuscleModel
+                priorities={{
+                  prioritized: plan.prioritizedMuscles || [],
+                  neutral: plan.neutralPoints || [],
+                  weak: plan.weakPoints || [],
+                }}
+              />
             </div>
             <div className="posterior-view">
               <PosteriorMuscleModel
@@ -75,38 +54,32 @@ const Home = () => {
               />
             </div>
           </div>
-          <div className="dashboard-bottom-section">
-            <div className="archetype-details">
-              <h3 className="program-detail-heading">Your Training Profile</h3>
-              <div className="program-detail-metadata">
-                <div className="detail-item">
-                  <span className="label text-lg">Plan:</span>
-                  <span className="value text-lg">{plan.planName}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="label text-lg">Training Days:</span>
-                  <span className="value text-lg">{plan.trainingDays}</span>
-                </div>
+          <div className="color-legend">
+            <h4>Muscle Priority</h4>
+            <div className="legend-items">
+              <div className="legend-item">
+                <span className="legend-color prioritized"></span>
+                <span className="text-lg">Prioritized</span>
               </div>
-            </div>
-            <div className="calendar-section-card">
-              <Calendar />
+              <div className="legend-item">
+                <span className="legend-color neutral"></span>
+                <span className="text-lg">Neutral</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-color weak"></span>
+                <span className="text-lg">Weak Points</span>
+              </div>
             </div>
           </div>
         </section>
-        <section className="upcoming-session-section">
+
+        <section className="left-section">
+          <div className="calendar-section-card">
+            <Calendar />
+          </div>
           <div className="upcoming-session-card">
             <UpcomingSession />
           </div>
-          <div className="motivation-card">
-                <span className="english text-md">
-                  "Today's 1% improvement is tomorrow's 100% success."
-                </span>
-                <span className="japanese text-md">
-                  継続は力なり (Keizoku wa chikara nari) - Continuity is
-                  strength.
-                </span>
-            </div>
         </section>
       </div>
     </div>

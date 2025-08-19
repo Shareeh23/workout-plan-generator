@@ -23,12 +23,15 @@ export default function LoginForm({ setMessage }) {
         type: "success",
       });
 
-      const redirectUrl = new URL('/auth/callback', window.location.origin);
-      redirectUrl.searchParams.set('token', response.token);
-      redirectUrl.searchParams.set('isNewUser', String(response.isNewUser));
-      redirectUrl.searchParams.set('hasWorkoutPlan', String(response.hasWorkoutPlan));
-      redirectUrl.searchParams.set('isAdmin', String(response.isAdmin));
-      
+      const redirectUrl = new URL("/auth/callback", window.location.origin);
+      redirectUrl.searchParams.set("token", response.token);
+      redirectUrl.searchParams.set("isNewUser", String(response.isNewUser));
+      redirectUrl.searchParams.set(
+        "hasWorkoutPlan",
+        String(response.hasWorkoutPlan)
+      );
+      redirectUrl.searchParams.set("isAdmin", String(response.isAdmin));
+
       // Redirect to auth callback with all parameters
       window.location.href = redirectUrl.toString();
     } catch (err) {
@@ -81,7 +84,11 @@ export default function LoginForm({ setMessage }) {
           </div>
         </div>
       </div>
-      <button type="submit" disabled={isLoading} className="login-btn btn-primary-md">
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="login-btn btn-primary-md"
+      >
         {isLoading ? "Logging in..." : "Login"}
       </button>
       <button

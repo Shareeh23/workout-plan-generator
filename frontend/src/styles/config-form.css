@@ -1,0 +1,196 @@
+.config-form-content {
+  width: inherit;
+}
+
+.spinner-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: inherit;
+  padding: 2.4rem;
+}
+
+.config-form-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: inherit;
+  gap: 1.2rem;
+  border-radius: 0.8rem;
+}
+
+.config-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.4rem;
+}
+
+.config-input-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+  min-width: 0;
+  background-color: var(--indigo-75);
+  min-height: auto;
+  height: auto;
+  padding: 1.2rem 1.6rem;
+  border-radius: 0.4rem;
+  overflow-wrap: break-word; /* Ensures long words can break and wrap */
+}
+
+.config-form-label {
+  color: var(--ivory-cream-100);
+  white-space: normal;
+}
+
+.config-input-group label,
+.config-input-group .config-form-input,
+.config-input-group select {
+  width: 100%;
+}
+
+.config-input-group label {
+  color: var(--ivory-cream-100);
+}
+
+.config-input-group .config-form-input,
+.config-input-group select {
+  font-family: var(--font-body);
+  font-size: var(--body-lg);
+  border: none;
+  background-color: var(--warm-beige-25);
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  color: var(--ivory-cream-100);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-appearance: menulist;
+  -moz-appearance: menulist;
+  appearance: menulist;
+}
+
+.config-input-group .config-form-input:focus {
+  outline: none;
+  background-color: var(--lime-green);
+  color: var(--indigo-100);
+}
+
+.config-input-group select {
+  background-color: var(--indigo-100);
+  color: var(--ivory-cream-100);
+}
+
+.config-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.config-next-btn:focus {
+  background-color: var(--tangerine-100) !important;
+}
+
+.config-save-btn {
+  background-color: var(--sea-green) !important;
+}
+
+.config-save-btn:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--sea-green) 75%,
+    transparent
+  ) !important;
+}
+
+.config-save-btn:focus {
+  background-color: var(--sea-green) !important;
+}
+
+/* Style when button has spinner */
+.config-save-btn:has(.btn-spinner) {
+  background-color: transparent!important;
+  cursor: wait;
+}
+
+.server-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1.2rem 0;
+  border-radius: 0.4rem;
+  border: 1px solid var(--indigo-100);
+  background-color: var(--tangerine-75);
+  color: var(--indigo-100) !important;
+  flex-wrap: wrap;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: inherit;
+  padding: 1.2rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--indigo-100);
+  background-color: color-mix(in srgb, var(--sea-green) 75%, transparent);
+  color: var(--ivory-cream-100) !important;
+  flex-wrap: wrap;
+}
+
+/* Button Spinner */
+.btn-spinner {
+  border-radius: 50%;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  vertical-align: middle;
+  animation: rotate 1.5s linear infinite;
+  flex-shrink: 0;
+}
+
+.btn-spinner::before,
+.btn-spinner::after {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid var(--indigo-100);
+  animation: prixClipFix 1.5s linear infinite;
+}
+
+.btn-spinner::after {
+  transform: rotate3d(90, 90, 0, 180deg);
+  border-color: var(--ivory-cream-100);
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes prixClipFix {
+  0% {
+    clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0);
+  }
+  50% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0);
+  }
+  75%,
+  100% {
+    clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%);
+  }
+}

@@ -29,7 +29,7 @@ exports.calculateDailyCalories = (
     gain: 500, // 500 calorie surplus
   };
 
-  const bmr = calculateBMR(gender, weight, height, age);
+  const bmr = this.calculateBMR(gender, weight, height, age);
   const tdee = Math.round(bmr * ACTIVITY_FACTORS[activityLevel]);
   return tdee + (GOAL_ADJUSTMENTS[goal] || 0);
 };

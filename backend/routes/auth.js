@@ -5,6 +5,7 @@ const isAuth = require('../middleware/is-auth');
 const passport = require('passport');
 const checkEmail = require('../middleware/check-email');
 const rejectHtml = require('../middleware/reject-html');
+const upload = require('../utils/fileUpload');
 
 const router = express.Router();
 
@@ -180,6 +181,36 @@ router.patch(
       .bail()
       .trim()
       .escape(),
+      body('currentPassword')
+      .isString()
+      .withMessage('Current password must be a string')
+      .bail()
+      .notEmpty()
+      .withMessage('Current password is required'),
+    body('newPassword')
+      .isString()
+      .withMessage('New password must be a string')
+      .bail()
+      .notEmpty()
+      .withMessage('New password is required')
+      .bail()
+      .isLength({ min: 8 })
+      .withMessage('New password must be at least 8 characters long')
+      .bail()
+      .matches(/[A-Z]/)
+      .withMessage('New password must contain at least one uppercase letter')
+      .bail()
+      .matches(/[a-z]/)
+      .withMessage('New password must contain at least one lowercase letter')
+      .bail()
+      .matches(/[0-9]/)
+      .withMessage('New password must contain at least one number')
+      .bail()
+      .matches(/[^a-zA-Z0-9]/)
+      .withMessage('New password must contain at least one special character')
+      .not()
+      .equals(body('currentPassword'))
+      .withMessage('New password must be different from current password'),
   ],
   authController.updateProfile
 );
@@ -200,5 +231,12 @@ router.delete(
 );
 
 router.get('/profile', isAuth, authController.getUserProfile);
+
+router.post(
+  '/profile-picture',
+  isAuth,
+  upload.single('profilePicture'),
+  authController.uploadProfilePicture
+);
 
 module.exports = router;

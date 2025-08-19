@@ -9,7 +9,7 @@ const PlanSelection = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     const fetchPlans = async () => {
       try {
@@ -39,7 +39,10 @@ const PlanSelection = () => {
     return (
       <div className="error-container">
         <p className="error-message text-lg">{error}</p>
-        <button onClick={() => window.location.reload()} className="retry-btn btn-primary-lg">
+        <button
+          onClick={() => window.location.reload()}
+          className="retry-btn btn-primary-lg"
+        >
           Retry
         </button>
       </div>
@@ -64,7 +67,9 @@ const PlanSelection = () => {
 
         <div className="custom-plan-cta">
           <h2>Don't see what you're looking for?</h2>
-          <p className="text-md">Create a custom workout plan tailored to your specific goals</p>
+          <p className="text-md">
+            Create a custom workout plan tailored to your specific goals
+          </p>
           <Link to="/workout-generation" className="custom-plan-btn">
             Create Custom Plan
           </Link>

@@ -14,11 +14,11 @@ export default function AuthCallback() {
     const hasWorkoutPlan = params.get("hasWorkoutPlan") === "true";
     const isAdmin = params.get("isAdmin") === "true";
 
-    console.log('AuthCallback Params:', {
+    console.log("AuthCallback Params:", {
       token,
       isNewUser,
       hasWorkoutPlan,
-      isAdmin
+      isAdmin,
     });
 
     if (token) {
@@ -42,10 +42,9 @@ export default function AuthCallback() {
   }, [navigate, location]);
 
   return (
-      <div className="auth-callback-container">
-        <span className="loader"></span>
-        <h2>{message}</h2>
-      </div>
+    <div className="auth-callback-container">
+      <span className="loader"></span>
+      <h2>{message}</h2>
+    </div>
   );
 }
-  

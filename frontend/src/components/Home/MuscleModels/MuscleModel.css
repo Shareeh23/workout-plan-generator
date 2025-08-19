@@ -23,7 +23,7 @@
 }
 
 .muscle-prioritized {
-  fill: var(--tangerine-100); 
+  fill: var(--tangerine-100);
   stroke: var(--tangerine-100) !important;
 }
 
@@ -34,7 +34,7 @@
 
 .muscle-weak {
   fill: var(--indigo-50);
-  stroke: var(--indigo-50) !important; 
+  stroke: var(--indigo-50) !important;
 }
 
 .muscle-hover {
@@ -45,13 +45,22 @@
 }
 
 .muscle-focus {
-  stroke: #333;
+  stroke: var(--black-100);
   stroke-width: 3px;
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
 }
 
-#back-outline,
-#anterior-view {
-  stroke: #333;
+/* Apply stroke to all path elements in both views */
+#posterior-view path,
+#anterior-view path {
+  stroke: var(--black-100);
   stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+#back-outline path,
+#front-outline path {
+  fill: none;
 }

@@ -1,0 +1,65 @@
+.config-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+  padding: 2.4rem 6rem;
+  background-color: var(--warm-beige-100);
+}
+
+.config-page-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2.4rem;
+  width: 100%;
+}
+
+.personal-info-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  width: 20%;
+  height: auto;
+  min-height: 100%;
+  padding: 1.6rem;
+  border-radius: 1.6rem;
+  background-color: var(--ivory-cream-75);
+}
+
+.spinner-container {
+  align-self: center;
+  margin: auto 0;
+}
+
+.top-section,
+.bottom-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  width: 100%;
+  height: auto;
+}
+
+.bottom-section {
+  margin: 0;
+  padding: 0 1.6rem;
+}
+
+.profile-form-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  height: auto;
+  min-height: 100%;
+  gap: 2.4rem;
+  padding: 2.4rem;
+  border-radius: 1.6rem;
+  background-color: var(--ivory-cream-75);
+}

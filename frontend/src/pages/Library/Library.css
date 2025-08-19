@@ -26,6 +26,16 @@
   box-sizing: border-box;
 }
 
+.library-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: calc(100vh - 8rem); /* Viewport height minus navbar height and padding */
+  gap: 1.6rem;
+}
+
 .plans-card {
   display: flex;
   flex-direction: column;

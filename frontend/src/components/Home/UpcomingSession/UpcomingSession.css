@@ -14,9 +14,9 @@
 
 .upcoming-session-table {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 1.6rem;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
   width: 100%;
 }
 
@@ -38,6 +38,56 @@
   color: var(--ivory-cream-100) !important;
 }
 
+.upcoming-session-col-cell-set {
+  color: var(--ivory-cream-100) !important;
+  text-align: center;
+}
+
+.upcoming-session-col-cell-set-alt {
+  color: var(--ivory-cream-50) !important;
+  font-weight: 600 !important;
+  text-align: center;
+}
+
+.alternate-text {
+  color: var(--ivory-cream-50) !important;
+  font-weight: 600 !important;
+}
+
+.color-explanation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 1.6rem;
+}
+
+.color-explanation-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.color-swatch {
+  display: inline-block;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 0.4rem;
+}
+
+.color-swatch.main-exercise {
+  background-color: var(--ivory-cream-100);
+}
+
+.color-swatch.alternate-exercise {
+  background-color: var(--ivory-cream-50);
+}
+
+.exercise-type {
+  color: var(--ivory-cream-100) !important;
+  white-space: nowrap;
+}
+
 .upcoming-session-no-exercises {
   grid-column: 1 / span 3;
 }
@@ -49,6 +99,8 @@
   text-align: center;
   color: var(--ivory-cream-100) !important;
 }
+
+/* This should be added to common class */
 
 .spinner {
   width: 48px;

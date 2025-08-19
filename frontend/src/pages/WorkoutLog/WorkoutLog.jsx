@@ -18,7 +18,7 @@ import ExerciseSelector from "../../components/WorkoutLog/ExerciseSelector/Exerc
 import SetForm from "../../components/WorkoutLog/SetForm/SetForm";
 import "./WorkoutLog.css";
 
-const WorkoutLog = () => {
+const WorkoutLog = ({user}) => {
   const [upcomingSession, setUpcomingSession] = useState(null);
   const [exerciseLogs, setExerciseLogs] = useState({});
   const [selectedExercise, setSelectedExercise] = useState(null);
@@ -222,7 +222,7 @@ const WorkoutLog = () => {
 
   return (
     <div className="workout-logs-page">
-      <Navbar />
+      <Navbar user={user}/>
       <div className="workout-logs-container">
         <section className="session-form">
           <h2>Session {upcomingSession?.sessionOrder}</h2>

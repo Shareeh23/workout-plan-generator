@@ -86,11 +86,11 @@ export const fetchUserProfile = async () => {
 
     const response = await fetch(`${API_BASE}/auth/profile`, {
       method: 'GET',
-      credentials: 'include', 
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) {

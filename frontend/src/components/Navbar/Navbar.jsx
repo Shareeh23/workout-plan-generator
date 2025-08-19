@@ -1,47 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./Navbar.css";
-import { Link, useLocation } from "react-router-dom";
-import { fetchUserProfile } from "../../services/authService";
+import { NavLink } from "react-router-dom";
 import {
   BellIcon,
   InformationCircleIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
-const Navbar = () => {
-  const [user, setUser] = useState(null);
-  const [showNavbar, setShowNavbar] = useState(false);
-  const location = useLocation();
-
-  // Fetch user profile when component mounts
-  useEffect(() => {
-    // Show navbar on all protected routes, hide on auth pages
-    const authPages = ["/login", "/signup", "/auth/callback", "/auth-failure"];
-    setShowNavbar(!authPages.includes(location.pathname));
-
-    const loadUser = async () => {
-      try {
-        const userData = await fetchUserProfile();
-        if (userData) {
-          setUser({
-            name: userData.name || "User",
-            image: userData.profilePicture || UserCircleIcon,
-          });
-        }
-      } catch (error) {
-        console.error("Error loading user profile:", error);
-      }
-    };
-    
-    // Only load user data if we should show the navbar
-    if (!authPages.includes(location.pathname)) {
-      loadUser();
-    }
-  }, [location.pathname]);
-
-  if (!showNavbar) {
-    return null;
-  }
+const Navbar = ({ user }) => {
+  const navLinkClass = ({ isActive }) =>
+    `nav-link text-lg${isActive ? " active" : ""}`;
 
   return (
     <nav className="navbar">
@@ -52,21 +21,21 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-links">
-        <Link to="/" className="nav-link text-lg">
+        <NavLink to="/" className={navLinkClass}>
           Home
-        </Link>
-        <Link to="/workout-log" className="nav-link text-lg">
+        </NavLink>
+        <NavLink to="/workout-log" className={navLinkClass}>
           Workout Log
-        </Link>
-        <Link to="/stats" className="nav-link text-lg">
+        </NavLink>
+        <NavLink to="/stats" className={navLinkClass}>
           Stats
-        </Link>
-        <Link to="/library" className="nav-link text-lg">
+        </NavLink>
+        <NavLink to="/library" className={navLinkClass}>
           Library
-        </Link>
-        <Link to="/settings" className="nav-link text-lg">
-          Settings
-        </Link>
+        </NavLink>
+        <NavLink to="/config" className={navLinkClass}>
+          Config
+        </NavLink>
       </div>
 
       <div className="utility-icons">
@@ -77,14 +46,13 @@ const Navbar = () => {
       {user && (
         <div className="profile">
           <div className="profile-image">
-            {user.image && typeof user.image === "string" ? (
+            {user.profilePicture ? (
               <img
-                src={user.image}
+                src={`http://localhost:3000${user.profilePicture}`}
                 alt={user.name}
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.style.display = "none";
-                  // Optionally, you can set a state here to display the icon instead
+                  e.target.style.display = "hidden";
                 }}
               />
             ) : (

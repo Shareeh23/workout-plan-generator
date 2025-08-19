@@ -39,9 +39,9 @@ const Admin = () => {
       setSubmitting(true);
       setMessage({ text: "", type: "" }); // Clear previous messages
       const response = await createWorkoutPlan(data, isMultipart);
-      setMessage({ 
-        text: response.message || "Workout plan created successfully!", 
-        type: "success" 
+      setMessage({
+        text: response.message || "Workout plan created successfully!",
+        type: "success",
       });
       setFormResetKey((prev) => prev + 1);
     } catch (error) {
@@ -77,8 +77,12 @@ const Admin = () => {
           >
             <XMarkIcon
               style={{
-                color: message.type === "success" ? "#166534" : 
-                       message.type === "error" ? "#b91c1c" : "#0369a1",
+                color:
+                  message.type === "success"
+                    ? "#166534"
+                    : message.type === "error"
+                    ? "#b91c1c"
+                    : "#0369a1",
                 width: "1.5rem",
                 height: "1.5rem",
               }}
@@ -89,7 +93,7 @@ const Admin = () => {
 
       <div className="admin-content">
         <h1 className="admin-title">Admin Dashboard</h1>
-        
+
         <div className="admin-tabs">
           <button
             className={`tab-btn btn-text-lg ${
