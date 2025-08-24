@@ -47,30 +47,10 @@ router.post(
   nutritionController.createNutritionProfile
 );
 
-// Calculate macros based on calories and split
-router.post(
-  '/calculate-macros',
-  isAuth,
-  [
-    body('calories')
-      .isInt({ min: 1000, max: 10000 })
-      .withMessage('Calories must be between 1000 and 10000'),
-      
-    body('split')
-      .optional()
-      .isIn(['40-30-30', '50-25-25', '60-20-20'])
-      .withMessage('Invalid macro split. Must be 40-30-30, 50-25-25, or 60-20-20')
-      .default('40-30-30')
-  ],
-  nutritionController.calculateMacros
-);
-
-// Update specific nutrition profile fields
 router.patch(
   '/update-profile',
   isAuth,
   [
-    // Basic info
     body('height')
       .isFloat({ min: 100, max: 250 })
       .withMessage('Height must be between 100cm and 250cm'),
@@ -104,6 +84,23 @@ router.patch(
       .default('40-30-30')
   ],
   nutritionController.updateNutritionProfile
+);
+
+router.post(
+  '/calculate-macros',
+  isAuth,
+  [
+    body('calories')
+      .isInt({ min: 1000, max: 10000 })
+      .withMessage('Calories must be between 1000 and 10000'),
+      
+    body('split')
+      .optional()
+      .isIn(['40-30-30', '50-25-25', '60-20-20'])
+      .withMessage('Invalid macro split. Must be 40-30-30, 50-25-25, or 60-20-20')
+      .default('40-30-30')
+  ],
+  nutritionController.calculateMacros
 );
 
 module.exports = router;

@@ -44,10 +44,10 @@ const NutritionProfileForm = ({
   isSubmitting = false,
   hasProfile = false,
   onTabChange = () => {},
-  activeTab = "basic"
+  activeTab = "basic",
 }) => {
   const { register, handleSubmit, reset } = useForm({
-    defaultValues: initialData
+    defaultValues: initialData,
   });
 
   // Reset form when initialData changes
@@ -62,7 +62,7 @@ const NutritionProfileForm = ({
       height: parseFloat(data.height),
       age: parseInt(data.age, 10),
     };
-    
+
     await onSubmit(profileData, hasProfile);
   };
 
@@ -104,14 +104,14 @@ const NutritionProfileForm = ({
               {/* Basic Information Tab */}
               {activeTab === "basic" && (
                 <div className="tab-content active">
-                   <div className="config-form-section">
+                  <div className="config-form-section">
                     <div className="config-input-group">
                       <label className="config-form-label text-md">
                         Gender
                       </label>
-                      <select 
+                      <select
                         className="config-form-select"
-                        {...register('gender')}
+                        {...register("gender")}
                       >
                         {GENDER_OPTIONS.map((option) => (
                           <option key={option.value} value={option.value}>
@@ -131,7 +131,7 @@ const NutritionProfileForm = ({
                         min="18"
                         max="60"
                         placeholder="25"
-                        {...register('age', { valueAsNumber: true })}
+                        {...register("age", { valueAsNumber: true })}
                       />
                     </div>
 
@@ -145,7 +145,7 @@ const NutritionProfileForm = ({
                         min="100"
                         max="250"
                         placeholder="180"
-                        {...register('height', { valueAsNumber: true })}
+                        {...register("height", { valueAsNumber: true })}
                       />
                     </div>
 
@@ -160,7 +160,7 @@ const NutritionProfileForm = ({
                         min="40"
                         max="150"
                         placeholder="85"
-                        {...register('weight', { valueAsNumber: true })}
+                        {...register("weight", { valueAsNumber: true })}
                       />
                     </div>
                   </div>
@@ -191,9 +191,9 @@ const NutritionProfileForm = ({
 
                     <div className="config-input-group">
                       <label className="config-form-label text-md">Goal</label>
-                      <select 
+                      <select
                         className="config-form-select"
-                        {...register('goal')}
+                        {...register("goal")}
                       >
                         {GOAL_OPTIONS.map((option) => (
                           <option key={option.value} value={option.value}>
@@ -207,9 +207,9 @@ const NutritionProfileForm = ({
                       <label className="config-form-label text-md">
                         Macro Split
                       </label>
-                      <select 
+                      <select
                         className="config-form-select"
-                        {...register('macroSplit')}
+                        {...register("macroSplit")}
                       >
                         {MACRO_SPLITS.map((split) => (
                           <option key={split.value} value={split.value}>
@@ -228,12 +228,16 @@ const NutritionProfileForm = ({
         <div className="config-form-actions">
           {activeTab === "advanced" && (
             <button
-            type="submit"
-            className="btn-primary-lg"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Saving..." : hasProfile ? "Update Profile" : "Create Profile"}
-          </button>
+              type="submit"
+              className="btn-primary-lg"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Saving..."
+                : hasProfile
+                ? "Update Profile"
+                : "Create Profile"}
+            </button>
           )}
         </div>
       </form>

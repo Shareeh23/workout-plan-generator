@@ -129,7 +129,6 @@
   width: 100%;
 }
 
-
 /* Empty states */
 .no-exercises,
 .no-log {
@@ -173,12 +172,6 @@
 
 .exercise-log {
   animation: fadeIn 0.3s ease-out forwards;
-}
-
-/* Previous logs specific */
-.previous-logs {
-  max-height: calc(100vh - 6rem);
-  overflow-y: auto;
 }
 
 /* Scrollbar styling */

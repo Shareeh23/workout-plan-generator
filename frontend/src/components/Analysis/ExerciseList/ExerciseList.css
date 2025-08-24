@@ -1,0 +1,52 @@
+.exercise-btns-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.exercise-button {
+  border-radius: 0.4rem !important;
+  background-color: var(--indigo-75) !important;
+}
+
+.exercise-button:hover {
+  background-color: var(--tangerine-100) !important;
+}
+
+.exercise-button.active {
+  background-color: var(--sea-green) !important;
+}
+
+.exercise-button.active:hover {
+  background-color: var(--sea-green);
+}
+
+.category-tag {
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.2);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.exercise-button.active .category-tag {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f8d7da;
+  border-radius: 4px;
+  border-left: 4px solid #dc3545;
+}

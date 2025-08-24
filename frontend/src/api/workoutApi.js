@@ -122,3 +122,21 @@ export const assignPredefinedPlan = async (planId) => {
   }
   return response.json();
 };
+
+export const getPlanExercises = async () => {
+  const token = localStorage.getItem('token');
+  const response = await fetch('http://localhost:3000/workout/plan/exercises', {
+    headers: { 
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}` 
+    },
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to fetch plan exercises');
+  }
+  
+  const data = await response.json();
+  return data.exercises;
+};

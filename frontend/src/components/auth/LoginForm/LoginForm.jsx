@@ -3,13 +3,13 @@ import { login, googleAuth } from "../../../services/authService";
 import { useState } from "react";
 import { AtSymbolIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import { FcGoogle } from "react-icons/fc";
+import { toast } from "sonner";
 
-export default function LoginForm({ setMessage }) {
+export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage({ text: "", type: "" });
     setIsLoading(true);
 
     const formData = new FormData(e.target);
@@ -17,11 +17,9 @@ export default function LoginForm({ setMessage }) {
 
     try {
       const response = await login(credentials);
+      toast.success(response.message)
 
-      setMessage({
-        text: response.message || "Login successful!",
-        type: "success",
-      });
+      /* FIXME: Redirection happens so fast, can't see the success message, adding a promise or a timeout for the redirection didn't resolve the issue */ 
 
       const redirectUrl = new URL("/auth/callback", window.location.origin);
       redirectUrl.searchParams.set("token", response.token);
@@ -35,10 +33,7 @@ export default function LoginForm({ setMessage }) {
       // Redirect to auth callback with all parameters
       window.location.href = redirectUrl.toString();
     } catch (err) {
-      setMessage({
-        text: err.message || "Login failed. Please try again.",
-        type: "error",
-      });
+      toast.error(err.message)
     } finally {
       setIsLoading(false);
     }

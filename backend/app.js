@@ -11,6 +11,7 @@ const { WorkoutGenerationError } = require('./utils/errors');
 const authRoutes = require('./routes/auth');
 const workoutRoutes = require('./routes/workout');
 const nutritionRoutes = require('./routes/nutrition');
+const analysisRoutes = require('./routes/analysis');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
@@ -68,6 +69,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/workout', workoutRoutes);
+app.use('/analysis', analysisRoutes);
 app.use('/nutrition', nutritionRoutes);
 
 // Enhanced error handling middleware

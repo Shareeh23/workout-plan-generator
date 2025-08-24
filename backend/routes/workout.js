@@ -5,6 +5,44 @@ const workoutController = require('../controllers/workout.js');
 
 const router = express.Router();
 
+router.get('/plan', isAuth, workoutController.getFullWorkoutPlan);
+
+router.get(
+  '/plan/priorities',
+  isAuth,
+  workoutController.getMuscleGroupPriorities
+);
+
+router.get('/plan/summary', isAuth, workoutController.getWorkoutPlanSummary);
+
+router.get(
+  '/plan/exercises',
+  isAuth,
+  workoutController.getPlanExercises
+);
+
+router.get(
+  '/plan/sessions/:sessionOrder',
+  isAuth,
+  [
+    param('sessionOrder')
+      .isInt({ min: 1 })
+      .withMessage('Valid session order required'),
+  ],
+  workoutController.getWorkoutSession
+);
+
+router.get(
+  '/planned-exercises',
+  isAuth,
+  [
+    query('sessionOrder')
+      .isInt({ min: 1 })
+      .withMessage('Valid session order required'),
+  ],
+  workoutController.getPlannedExercises
+);
+
 router.post(
   '/generate',
   isAuth,
@@ -40,38 +78,6 @@ router.post(
 );
 
 router.post('/deactivate', isAuth, workoutController.deactivatePlan);
-
-router.get(
-  '/planned-exercises',
-  isAuth,
-  [
-    query('sessionOrder')
-      .isInt({ min: 1 })
-      .withMessage('Valid session order required'),
-  ],
-  workoutController.getPlannedExercises
-);
-
-router.get(
-  '/plan/priorities',
-  isAuth,
-  workoutController.getMuscleGroupPriorities
-);
-
-router.get('/plan/summary', isAuth, workoutController.getWorkoutPlanSummary);
-
-router.get('/plan', isAuth, workoutController.getFullWorkoutPlan);
-
-router.get(
-  '/plan/sessions/:sessionOrder',
-  isAuth,
-  [
-    param('sessionOrder')
-      .isInt({ min: 1 })
-      .withMessage('Valid session order required'),
-  ],
-  workoutController.getWorkoutSession
-);
 
 router.get('/predefined-plans', isAuth, workoutController.getPredefinedPlans);
 

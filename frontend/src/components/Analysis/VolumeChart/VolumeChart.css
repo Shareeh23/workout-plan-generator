@@ -1,0 +1,35 @@
+/* Bar styling */
+.recharts-layer .recharts-bar-rectangle {
+  fill: var(--tangerine-100) !important;
+}
+
+/* Axis styling */
+.recharts-cartesian-axis-tick text {
+  font-family: var(--font-body) !important;
+  font-weight: var(--font-bold) !important;
+  font-size: var(--body-md) !important;
+  line-height: var(--body-md-line-height) !important;
+  color: var(--ivory-cream-100) !important;
+}
+
+.recharts-cartesian-grid line {
+  stroke: var(--warm-beige-100) !important;
+}
+
+/* Reference line styling */
+.recharts-reference-line-line {
+  stroke-dasharray: 3 3;
+  stroke: var(--ivory-cream-100) !important;
+}
+
+.recharts-label {
+  font-family: var(--font-body) !important;
+  font-weight: var(--font-bold) !important;
+  font-size: var(--body-md) !important;
+  line-height: var(--body-md-line-height) !important;
+  fill: var(--ivory-cream-100) !important;
+}
+
+.recharts-surface {
+  fill: var(--tangerine-100) !important;
+}

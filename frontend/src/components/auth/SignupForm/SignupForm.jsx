@@ -2,15 +2,16 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import "./SignupForm.css";
 import { googleAuth } from "../../../services/authService";
-import { 
-  AtSymbolIcon, 
-  LockClosedIcon, 
-  UserIcon 
+import {
+  AtSymbolIcon,
+  LockClosedIcon,
+  UserIcon,
 } from "@heroicons/react/24/outline";
+import { toast } from "sonner";
 import { signup } from "../../../services/authService";
 import "./SignupForm.css";
 
-export default function SignupForm({ setMessage }) {
+export default function SignupForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,21 +25,16 @@ export default function SignupForm({ setMessage }) {
     setIsLoading(true);
     try {
       const response = await signup(formData);
+      console.log(response)
       if (response.token) {
         localStorage.setItem("token", response.token);
       }
-      setMessage({
-        text: response.message || "Account created successfully!",
-        type: "success",
-      });
+      toast.success(response.message);
       setTimeout(() => {
         window.location.href = "/select-plan";
       }, 1500);
-    } catch (error) {
-      setMessage({
-        text: error.message || "Signup failed. Please try again.",
-        type: "error",
-      });
+    } catch (err) {
+      toast.error(err.message)
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +111,11 @@ export default function SignupForm({ setMessage }) {
         </div>
       </div>
 
-      <button type="submit" disabled={isLoading} className="login-btn btn-primary-md">
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="login-btn btn-primary-md"
+      >
         {isLoading ? "Creating account..." : "Sign Up"}
       </button>
 

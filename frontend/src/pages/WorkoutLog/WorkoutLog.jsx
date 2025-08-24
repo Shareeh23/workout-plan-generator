@@ -18,7 +18,7 @@ import ExerciseSelector from "../../components/WorkoutLog/ExerciseSelector/Exerc
 import SetForm from "../../components/WorkoutLog/SetForm/SetForm";
 import "./WorkoutLog.css";
 
-const WorkoutLog = ({user}) => {
+const WorkoutLog = ({ user }) => {
   const [upcomingSession, setUpcomingSession] = useState(null);
   const [exerciseLogs, setExerciseLogs] = useState({});
   const [selectedExercise, setSelectedExercise] = useState(null);
@@ -222,7 +222,7 @@ const WorkoutLog = ({user}) => {
 
   return (
     <div className="workout-logs-page">
-      <Navbar user={user}/>
+      <Navbar user={user} />
       <div className="workout-logs-container">
         <section className="session-form">
           <h2>Session {upcomingSession?.sessionOrder}</h2>
@@ -279,17 +279,17 @@ const WorkoutLog = ({user}) => {
         <section className="previous-logs">
           <div className="log-navigation">
             <button
-              onClick={() => navigateLogs("prev")}
+              onClick={() => navigateLogs("next")}
               className="btn-fab-md icon-button"
-              aria-label="Previous"
+              aria-label="Next"
             >
               <ChevronLeftIcon />
             </button>
             <h2>Previous Workouts</h2>
             <button
-              onClick={() => navigateLogs("next")}
+              onClick={() => navigateLogs("prev")}
               className="btn-fab-md icon-button"
-              aria-label="Next"
+              aria-label="Previous"
             >
               <ChevronRightIcon />
             </button>

@@ -251,7 +251,7 @@ exports.logWorkout = async (req, res, next) => {
     }
 
     console.log('Authenticated user:', req.user); // Debug log
-    
+
     if (!req.user || !req.user._id) {
       const error = new Error('User authentication failed');
       error.statusCode = 401;
@@ -260,25 +260,26 @@ exports.logWorkout = async (req, res, next) => {
 
     const { sessionOrder, exercises } = req.body;
 
-    console.log('Creating workout log with data:', { // Debug log
+    console.log('Creating workout log with data:', {
+      // Debug log
       user: req.user._id,
       sessionOrder,
-      exercises: exercises.map(ex => ({
+      exercises: exercises.map((ex) => ({
         name: ex.name,
-        performedSets: ex.performedSets
-      }))
+        performedSets: ex.performedSets,
+      })),
     });
 
     const workoutLog = new WorkoutLog({
       userId: req.user._id,
       sessionOrder: sessionOrder || 1,
-      exercises: exercises.map(exercise => ({
+      exercises: exercises.map((exercise) => ({
         name: exercise.name,
-        performedSets: exercise.performedSets.map(set => ({
+        performedSets: exercise.performedSets.map((set) => ({
           weight: parseFloat(set.weight) || 0,
-          reps: parseInt(set.reps) || 0
-        }))
-      }))
+          reps: parseInt(set.reps) || 0,
+        })),
+      })),
     });
 
     await workoutLog.save();
@@ -286,7 +287,7 @@ exports.logWorkout = async (req, res, next) => {
     res.status(201).json({
       message: 'Workout logged successfully',
       logId: workoutLog._id,
-      data: workoutLog
+      data: workoutLog,
     });
   } catch (err) {
     console.error('Error in logWorkout:', err);
@@ -345,6 +346,35 @@ exports.updateLog = async (req, res, next) => {
     );
     if (!log) throw new Error('Log not found');
     res.json(log);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getPlanExercises = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const exercises = await User.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(userId) } },
+      { $unwind: '$workoutPlan.sessions' },
+      { $unwind: '$workoutPlan.sessions.exercises' },
+      {
+        $group: {
+          _id: '$workoutPlan.sessions.exercises.name',
+          category: { $first: '$workoutPlan.sessions.exercises.category' },
+        },
+      },
+      {
+        $project: {
+          name: '$_id',
+          _id: 0,
+          category: 1,
+        },
+      },
+    ]);
+
+    res.json({ exercises });
   } catch (error) {
     next(error);
   }

@@ -1,0 +1,88 @@
+.analysis-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+  padding: 2.4rem 6rem;
+  background-color: var(--warm-beige-100);
+}
+
+.analysis-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2.4rem;
+  width: 100%;
+}
+
+.exercises-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.6rem;
+  width: 100%;
+  padding: 2.4rem;
+  border-radius: 1.6rem;
+  background-color: var(--ivory-cream-50);
+  box-shadow: var(--shadow-md);
+}
+
+.analysis-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.6rem;
+  width: 100%;
+}
+
+.analysis-header {
+  width: 100% !important;
+  padding: 1.2rem 1.6rem;
+  background-color: var(--tangerine-50);
+  border-radius: 0.4rem;
+}
+
+.analysis-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2.4rem;
+  width: 100%;
+}
+
+.analysis-grid-left, .analysis-grid-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.6rem;
+  width: auto;
+}
+
+.analysis-grid-right {
+  flex-direction: row;
+  flex: 1;
+  gap: 2.4rem;
+  height: auto;
+}
+
+.analysis-chart-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  width: 100%;
+  height: 100%;
+  padding: 2.4rem;
+  border-radius: 1.6rem;
+  background-color: var(--indigo-75);
+}
+
+.analysis-card-header {
+  color: var(--lime-green);
+}

@@ -1,0 +1,55 @@
+.performance-metrics-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  width: auto;
+  padding: 2.4rem;
+  border-radius: 1.6rem;
+  background-color: var(--indigo-75);
+}
+
+.performance-metrics-header {
+  color: var(--lime-green) !important;
+}
+
+.metrics-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.metric-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.metric-date {
+  color: var(--warm-beige-100) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .metric-item {
+    padding: 12px;
+  }
+  
+  .metric-value {
+    font-size: 18px;
+  }
+}

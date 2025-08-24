@@ -14,13 +14,6 @@ export default function AuthCallback() {
     const hasWorkoutPlan = params.get("hasWorkoutPlan") === "true";
     const isAdmin = params.get("isAdmin") === "true";
 
-    console.log("AuthCallback Params:", {
-      token,
-      isNewUser,
-      hasWorkoutPlan,
-      isAdmin,
-    });
-
     if (token) {
       localStorage.setItem("token", token);
       if (isAdmin) {

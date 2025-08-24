@@ -27,8 +27,11 @@ const Navbar = ({ user }) => {
         <NavLink to="/workout-log" className={navLinkClass}>
           Workout Log
         </NavLink>
-        <NavLink to="/stats" className={navLinkClass}>
-          Stats
+        <NavLink to="/profile" className={navLinkClass}>
+          Profile
+        </NavLink>
+        <NavLink to="/analysis" className={navLinkClass}>
+          Analysis
         </NavLink>
         <NavLink to="/library" className={navLinkClass}>
           Library

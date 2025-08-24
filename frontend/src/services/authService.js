@@ -16,14 +16,6 @@ export const login = async (credentials) => {
           .join(', ');
         throw new Error(validationErrors);
       }
-
-      // Use backend error message or fallback
-      const message =
-        error.response.data?.message ||
-        error.response.data?.error ||
-        error.response.statusText ||
-        'Login failed';
-      throw new Error(message);
     } else {
       throw new Error('Network error - please try again');
     }
@@ -47,11 +39,6 @@ export const signup = async (userData) => {
         const validationErrors = data.data.map((err) => err.msg).join(', ');
         throw new Error(validationErrors);
       }
-
-      // Use backend error message or fallback
-      const message =
-        data?.message || data?.error || response.statusText || 'Signup failed';
-      throw new Error(message);
     }
 
     return data;

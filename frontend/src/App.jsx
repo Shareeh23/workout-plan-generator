@@ -6,6 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { getCurrentUser } from "./api/auth";
+import { Toaster } from 'sonner';
 import LoginPage from "./pages/LoginPage/LoginPage";
 import SignupPage from "./pages/SignupPage/SignupPage";
 import AuthCallback from "./pages/AuthCallback/AuthCallback";
@@ -15,7 +16,8 @@ import PlanSelection from "./pages/PlanSelection/PlanSelection";
 import Admin from "./pages/Admin/Admin";
 import Home from "./pages/Home/Home";
 import Library from "./pages/Library/Library";
-import Stats from "./pages/Stats/Stats";
+import Profile from "./pages/Profile/Profile";
+import Analysis from "./pages/Analysis/Analysis";
 import WorkoutLog from "./pages/WorkoutLog/WorkoutLog";
 import ConfigPage from "./pages/ConfigPage/ConfigPage";
 
@@ -37,7 +39,6 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
 
 function App() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const handleUserUpdate = (updatedUserData) => {
     setUser((prevUser) => ({
@@ -69,9 +70,7 @@ function App() {
         }
       } catch (error) {
         console.error("Error loading user profile:", error);
-      } finally {
-        setLoading(false);
-      }
+      } 
     };
 
     loadUser();
@@ -79,6 +78,12 @@ function App() {
 
   return (
     <Router>
+      <Toaster 
+      position="top-right"
+      richColors
+      expand={true}
+      closeButton
+    />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
@@ -110,10 +115,18 @@ function App() {
           }
         />
         <Route
-          path="/stats"
+          path="/profile"
           element={
             <ProtectedRoute>
-              <Stats user={user} />
+              <Profile user={user} />
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/analysis"
+          element={
+            <ProtectedRoute>
+              <Analysis user={user} />
             </ProtectedRoute>
           }
         ></Route>
