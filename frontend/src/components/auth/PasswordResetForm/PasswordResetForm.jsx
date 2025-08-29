@@ -147,16 +147,12 @@ const PasswordResetForm = () => {
             />
           </div>
           <div
-              className="icon"
-              onClick={() => setShowPassword(!showPassword)}
-              aria-label={showPassword ? "Hide OTP" : "Show OTP"}
-            >
-              {showPassword ? (
-                <LockOpenIcon />
-              ) : (
-                <LockClosedIcon />
-              )}
-            </div>
+            className="icon"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Hide OTP" : "Show OTP"}
+          >
+            {showPassword ? <LockOpenIcon /> : <LockClosedIcon />}
+          </div>
         </div>
       )}
 
@@ -208,14 +204,8 @@ const PasswordResetForm = () => {
         </>
       )}
 
-      <button
-        type="submit"
-        className={`btn-primary-lg ${isLoading ? "loading" : ""}`}
-        disabled={isLoading}
-      >
-        {isLoading
-          ? "Processing..."
-          : step === 1
+      <button type="submit" className="btn-primary-lg">
+        {step === 1
           ? "Send Code"
           : step === 2
           ? "Verify Code"
