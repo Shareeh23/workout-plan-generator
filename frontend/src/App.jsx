@@ -6,9 +6,10 @@ import {
   Navigate,
 } from "react-router-dom";
 import { getCurrentUser } from "./api/auth";
-import { Toaster } from 'sonner';
+import { Toaster } from "sonner";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import SignupPage from "./pages/SignupPage/SignupPage";
+import ResetPassword from './pages/ResetPassword/ResetPassword';
 import AuthCallback from "./pages/AuthCallback/AuthCallback";
 import AuthFailure from "./pages/AuthFailure/AuthFailure";
 import WorkoutPlan from "./pages/WorkoutPlan/WorkoutPlan";
@@ -70,7 +71,7 @@ function App() {
         }
       } catch (error) {
         console.error("Error loading user profile:", error);
-      } 
+      }
     };
 
     loadUser();
@@ -78,15 +79,11 @@ function App() {
 
   return (
     <Router>
-      <Toaster 
-      position="top-right"
-      richColors
-      expand={true}
-      closeButton
-    />
+      <Toaster position="top-right" richColors expand={true} closeButton />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
         <Route path="/auth-failure" element={<AuthFailure />} />
         <Route path="/select-plan" element={<PlanSelection user={user} />} />

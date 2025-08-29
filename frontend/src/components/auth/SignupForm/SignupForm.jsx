@@ -5,6 +5,7 @@ import { googleAuth } from "../../../services/authService";
 import {
   AtSymbolIcon,
   LockClosedIcon,
+  LockOpenIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
@@ -18,6 +19,7 @@ export default function SignupForm() {
     password: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -95,7 +97,7 @@ export default function SignupForm() {
               Password
             </label>
             <input
-              type="text"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               name="password"
               placeholder="MyPass!123"
@@ -103,10 +105,15 @@ export default function SignupForm() {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
+              autoComplete="new-password"
             />
           </div>
-          <div className="icon">
-            <LockClosedIcon />
+          <div 
+            className="icon cursor-pointer"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <LockOpenIcon /> : <LockClosedIcon />}
           </div>
         </div>
       </div>

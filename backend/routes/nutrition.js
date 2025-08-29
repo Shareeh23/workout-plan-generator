@@ -3,7 +3,6 @@ const { body } = require('express-validator');
 const nutritionController = require('../controllers/nutrition');
 const isAuth = require('../middleware/is-auth');
 
-
 const router = express.Router();
 
 router.get('/get-profile', isAuth, nutritionController.getNutritionProfile);

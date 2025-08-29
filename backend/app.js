@@ -25,12 +25,12 @@ const adminLimiter = rateLimit({
   windowMs: 30 * 60 * 1000, // 30 minutes
   max: 100,
   message: 'Too many requests from this IP',
-  skip: req => !req.path.startsWith('/admin')
+  skip: (req) => !req.path.startsWith('/admin'),
 });
 
-app.use(passport.initialize());
+app.use('/admin', adminLimiter);
 
-app.use(adminLimiter);
+app.use(passport.initialize());
 
 app.use(
   cors({
@@ -58,13 +58,16 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-  setHeaders: (res) => {
-    res.set('Content-Disposition', 'inline');
-    // Prevent content sniffing
-    res.set('X-Content-Type-Options', 'nosniff');
-  }
-}));
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, 'uploads'), {
+    setHeaders: (res) => {
+      res.set('Content-Disposition', 'inline');
+      // Prevent content sniffing
+      res.set('X-Content-Type-Options', 'nosniff');
+    },
+  })
+);
 
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
@@ -72,7 +75,7 @@ app.use('/workout', workoutRoutes);
 app.use('/analysis', analysisRoutes);
 app.use('/nutrition', nutritionRoutes);
 
-// Enhanced error handling middleware
+// Enhanced error handling middleware for workout generation
 app.use((error, req, res, next) => {
   if (error instanceof WorkoutGenerationError) {
     return res.status(502).json({

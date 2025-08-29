@@ -2,13 +2,21 @@ import React from "react";
 import "./Navbar.css";
 import { NavLink } from "react-router-dom";
 import {
-  BellIcon,
+  ArrowRightStartOnRectangleIcon,
   InformationCircleIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import apiClient from "../../api/apiClient";
 
 const Navbar = ({ user }) => {
+  const handleLogout = () => {
+    const itemsToRemove = ["token", "isAdmin", "nutritionProfileCache"];
+
+    itemsToRemove.forEach((item) => localStorage.removeItem(item));
+    delete apiClient.defaults.headers.common["Authorization"];
+    window.location.href = "/login?logout=success";
+  };
   const navLinkClass = ({ isActive }) =>
     `nav-link text-lg${isActive ? " active" : ""}`;
 
@@ -42,8 +50,13 @@ const Navbar = ({ user }) => {
       </div>
 
       <div className="utility-icons">
-        <BellIcon className="bell-icon" />
-        <InformationCircleIcon className="info-icon" />
+        <ArrowRightStartOnRectangleIcon
+          onClick={handleLogout}
+          className="navbar-icon"
+          aria-label="Logout"
+        />
+
+        <InformationCircleIcon className="navbar-icon" />
       </div>
 
       {user && (

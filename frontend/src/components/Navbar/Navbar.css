@@ -74,14 +74,14 @@
   flex-shrink: 0;
 }
 
-.bell-icon, .info-icon {
+.navbar-icon {
   width: 2.8rem;
   height: 2.8rem;
   color: var(--ivory-cream-100) !important;
   transition: 0.2s all ease;
 }
 
-.bell-icon:hover, .info-icon:hover {
+.navbar-icon:hover {
   color: var(--lime-green) !important;
 }
 

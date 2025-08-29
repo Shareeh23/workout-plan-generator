@@ -8,12 +8,12 @@ module.exports = async (req, res, next) => {
     const user = await User.findOne({ _id: decoded.userId });
 
     if (!user) {
-      throw new Error();
+      return res.status(401).json({ error: 'User not found' });
     }
 
     req.user = user;
     next();
   } catch (error) {
-    res.status(401).send({ error: 'Please authenticate' });
+    res.status(401).json({ error: 'Please authenticate' });
   }
 };

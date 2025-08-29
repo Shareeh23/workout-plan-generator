@@ -21,13 +21,12 @@ router.get(
   '/signup/google/callback',
   passport.authenticate('google', {
     session: false,
-    failureRedirect: 'http://localhost:5173/auth-failure?message=Google+login+failed',
+    failureRedirect:
+      'http://localhost:5173/auth-failure?message=Google+login+failed',
     failureMessage: 'Google login failed - please try again',
   }),
   authController.oauthGoogle
 );
-
-// TODO: Failure Redirect should be the sign up route
 
 router.put(
   '/signup/local',
@@ -110,18 +109,72 @@ router.put(
   authController.login
 );
 
+router.post('/logout', isAuth, authController.logout);
+
+router.post(
+  '/request-reset',
+  rejectHtml('email'),
+  [
+    body('email')
+      .isString()
+      .withMessage('Email must be a string')
+      .bail()
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage('Email is required')
+      .bail()
+      .isEmail()
+      .withMessage('Please enter a valid email address')
+      .normalizeEmail(),
+  ],
+  authController.requestReset
+);
+
+router.post(
+  '/verify-otp',
+  rejectHtml('email'),
+  rejectHtml('otp'),
+  [
+    body('email')
+      .isString()
+      .withMessage('Email must be a string')
+      .bail()
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage('Email is required')
+      .bail()
+      .isEmail()
+      .withMessage('Please enter a valid email address')
+      .normalizeEmail(),
+    body('otp')
+      .notEmpty()
+      .withMessage('OTP is required')
+      .isNumeric()
+      .withMessage('OTP must be a number')
+      .isLength({ min: 6, max: 6 })
+      .withMessage('OTP must be exactly 6 digits'),
+  ],
+  authController.verifyOtp
+);
+
 router.put(
   '/change-password',
-  isAuth,
-  rejectHtml('currentPassword'),
+  rejectHtml('email'),
   rejectHtml('newPassword'),
   [
-    body('currentPassword')
+    body('email')
       .isString()
-      .withMessage('Current password must be a string')
+      .withMessage('Email must be a string')
       .bail()
+      .trim()
+      .escape()
       .notEmpty()
-      .withMessage('Current password is required'),
+      .withMessage('Email is required')
+      .bail()
+      .isEmail()
+      .withMessage('Please enter a valid email address'),
     body('newPassword')
       .isString()
       .withMessage('New password must be a string')
@@ -142,10 +195,7 @@ router.put(
       .withMessage('New password must contain at least one number')
       .bail()
       .matches(/[^a-zA-Z0-9]/)
-      .withMessage('New password must contain at least one special character')
-      .not()
-      .equals(body('currentPassword'))
-      .withMessage('New password must be different from current password'),
+      .withMessage('New password must contain at least one special character'),
   ],
   authController.changePassword
 );
@@ -155,6 +205,8 @@ router.patch(
   isAuth,
   rejectHtml('email'),
   rejectHtml('name'),
+  rejectHtml('currentPassword'),
+  rejectHtml('newPassword'),
   [
     body('email')
       .optional()
@@ -181,7 +233,7 @@ router.patch(
       .bail()
       .trim()
       .escape(),
-      body('currentPassword')
+    body('currentPassword')
       .isString()
       .withMessage('Current password must be a string')
       .bail()

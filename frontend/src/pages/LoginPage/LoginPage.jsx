@@ -1,7 +1,23 @@
-import LoginForm from "../../components/auth/LoginForm/LoginForm";
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import "./LoginPage.css";
+import LoginForm from "../../components/auth/LoginForm/LoginForm";
+
 
 export default function LoginPage() {
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const showLogoutMessage = searchParams.get('logout') === 'success';
+    if (showLogoutMessage) {
+      const timer = setTimeout(() => {
+        toast.success('You have been logged out successfully');
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   return (
     <div className="login-page">
@@ -16,7 +32,7 @@ export default function LoginPage() {
             <a href="/signup" className="text-lg">
               Don't have an account? Sign up
             </a>
-            <a href="/forgot-password" className="text-lg">
+            <a href="/reset-password" className="text-lg">
               Forgot password?
             </a>
           </div>

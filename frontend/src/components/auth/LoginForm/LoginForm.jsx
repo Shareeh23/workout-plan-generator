@@ -1,12 +1,17 @@
 import "./LoginForm.css";
 import { login, googleAuth } from "../../../services/authService";
 import { useState } from "react";
-import { AtSymbolIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import {
+  AtSymbolIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+} from "@heroicons/react/24/outline";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,9 +22,7 @@ export default function LoginForm() {
 
     try {
       const response = await login(credentials);
-      toast.success(response.message)
-
-      /* FIXME: Redirection happens so fast, can't see the success message, adding a promise or a timeout for the redirection didn't resolve the issue */ 
+      toast.success(response.message);
 
       const redirectUrl = new URL("/auth/callback", window.location.origin);
       redirectUrl.searchParams.set("token", response.token);
@@ -33,7 +36,7 @@ export default function LoginForm() {
       // Redirect to auth callback with all parameters
       window.location.href = redirectUrl.toString();
     } catch (err) {
-      toast.error(err.message)
+      toast.error(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -68,14 +71,19 @@ export default function LoginForm() {
               Password
             </label>
             <input
-              type="text"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               name="password"
               placeholder="MyPass!123"
+              autoComplete="new-password"
             />
           </div>
-          <div className="icon">
-            <LockClosedIcon />
+          <div
+            className="icon"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <LockOpenIcon /> : <LockClosedIcon />}
           </div>
         </div>
       </div>

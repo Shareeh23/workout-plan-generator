@@ -298,26 +298,6 @@ exports.logWorkout = async (req, res, next) => {
   }
 };
 
-exports.createLog = async (req, res, next) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        status: 'error',
-        errors: errors.array(),
-      });
-    }
-
-    const log = await WorkoutLog.create({
-      userId: req.user._id,
-      ...req.body,
-    });
-    res.status(201).json(log);
-  } catch (error) {
-    next(error);
-  }
-};
-
 exports.getLogs = async (req, res, next) => {
   try {
     const logs = await WorkoutLog.find({ userId: req.user._id }).sort({

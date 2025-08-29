@@ -58,6 +58,100 @@ export const updateUserProfile = async (userData) => {
   }
 };
 
+export const forgotPassword = async (email) => {
+  try {
+    const response = await apiClient.post('/auth/request-reset', { email });
+    return {
+      success: true,
+      data: response.data,
+      message: response.data?.message,
+    };
+  } catch (error) {
+    console.error('Error sending reset email:', error);
+
+    // Handle validation errors (422 status code)
+    if (error.response?.status === 422) {
+      const validationErrors = error.response.data?.data || [];
+      const errorMessage =
+        validationErrors.map((err) => err.msg).join(' ') || 'Validation failed';
+      return {
+        success: false,
+        error: errorMessage,
+        status: 422,
+        validationErrors,
+      };
+    }
+
+    return {
+      success: false,
+      error: error.response?.data?.message,
+      status: error.response?.status,
+    };
+  }
+};
+
+export const verifyResetOtp = async (email, otp) => {
+  try {
+    const response = await apiClient.post('/auth/verify-otp', { email, otp });
+    return {
+      success: true,
+      data: response.data,
+      message: response.data?.message,
+    };
+  } catch (error) {
+    if (error.response?.status === 422) {
+      const validationErrors = error.response.data?.data || [];
+      const errorMessage =
+        validationErrors.map((err) => err.msg).join(' ') || 'Validation failed';
+      return {
+        success: false,
+        error: errorMessage,
+        status: 422,
+        validationErrors,
+      };
+    }
+
+    return {
+      success: false,
+      error: error.response?.data?.message,
+      status: error.response?.status,
+    };
+  }
+};
+
+export const resetPassword = async (email, newPassword) => {
+  try {
+    const response = await apiClient.put('/auth/change-password', {
+      email,
+      newPassword,
+    });
+
+    return {
+      success: true,
+      data: response.data,
+      message: response.data?.message,
+    };
+  } catch (error) {
+    if (error.response?.status === 422) {
+      const validationErrors = error.response.data?.data || [];
+      const errorMessage =
+        validationErrors.map((err) => err.msg).join(' ') || 'Validation failed';
+      return {
+        success: false,
+        error: errorMessage,
+        status: 422,
+        validationErrors,
+      };
+    }
+
+    return {
+      success: false,
+      error: error.response?.data?.message,
+      status: error.response?.status,
+    };
+  }
+};
+
 export const getCurrentUser = async () => {
   try {
     const response = await apiClient.get('/auth/profile');

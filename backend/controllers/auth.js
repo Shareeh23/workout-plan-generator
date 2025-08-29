@@ -1,11 +1,17 @@
 require('dotenv').config();
 
-const { validationResult } = require('express-validator');
-const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
+
+const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+
 const User = require('../models/user');
+const PasswordReset = require('../models/passwordResetSchema');
+
 const { generateAuthResponse } = require('../utils/auth-util');
+const sendPasswordResetEmail = require('../utils/emailService');
 
 exports.signup = async (req, res, next) => {
   try {
@@ -28,7 +34,6 @@ exports.signup = async (req, res, next) => {
       ...authData,
     });
   } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
     next(err);
   }
 };
@@ -80,7 +85,6 @@ exports.login = async (req, res, next) => {
       throw error;
     }
 
-    // Check if user signed up via Google
     if (user.googleId) {
       const error = new Error('Please sign in using Google');
       error.statusCode = 401;
@@ -107,44 +111,152 @@ exports.login = async (req, res, next) => {
   }
 };
 
+exports.logout = (req, res) => {
+  res.status(200).json({ 
+    success: true,
+    message: 'Successfully logged out' 
+  });
+};
+
+exports.requestReset = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed.');
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No account found with this email address',
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    await PasswordReset.findOneAndUpdate(
+      { email },
+      {
+        email,
+        otp,
+        otpExpires,
+        isOtpVerified: false,
+        otpVerifiedAt: null,
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
+    await sendPasswordResetEmail(email, otp);
+
+    res.status(200).json({
+      success: true,
+      message: 'A reset OTP has been sent to your email',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.verifyOtp = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed.');
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const { email, otp } = req.body;
+    const now = new Date();
+
+    const resetRecord = await PasswordReset.findOneAndUpdate(
+      {
+        email,
+        otp,
+        otpExpires: { $gt: now },
+        isOtpVerified: false,
+      },
+      {
+        $set: {
+          isOtpVerified: true,
+          otpVerifiedAt: new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    if (!resetRecord) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid OTP, or OTP has expired or already used',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'OTP verified successfully',
+      otp: resetRecord.otp,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.changePassword = async (req, res, next) => {
   try {
-    const { currentPassword, newPassword } = req.body;
-    const userId = req.user._id;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error('Validation failed.');
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
 
-    const user = await User.findById(userId);
+    const { newPassword, email } = req.body;
+
+    const resetRecord = await PasswordReset.findOne({
+      email,
+      isOtpVerified: true,
+      otpExpires: { $gt: new Date() },
+    });
+
+    if (!resetRecord) {
+      return res.status(400).json({
+        success: false,
+        message:
+          'No valid password reset request found. Please start the reset process again.',
+      });
+    }
+
+    const user = await User.findOne({ email });
     if (!user) {
-      const error = new Error('User not found');
-      error.statusCode = 404;
-      throw error;
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
     }
 
-    // Prevent Google users from changing password
-    if (user.googleId) {
-      const error = new Error(
-        'Google-authenticated users cannot change password'
-      );
-      error.statusCode = 403;
-      throw error;
-    }
-
-    // Verify current password
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
-    if (!isMatch) {
-      const error = new Error('Current password is incorrect');
-      error.statusCode = 401;
-      throw error;
-    }
-
-    // Hash and save new password
     const hashedPassword = await bcrypt.hash(newPassword, 12);
     user.password = hashedPassword;
     await user.save();
 
-    res.status(200).json({ message: 'Password updated successfully' });
-  } catch (err) {
-    if (!err.statusCode) err.statusCode = 500;
-    next(err);
+    await PasswordReset.deleteOne({ _id: resetRecord._id });
+    res.clearCookie('resetToken');
+
+    res.status(200).json({
+      success: true,
+      message: 'Password changed successfully',
+    });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -181,7 +293,7 @@ exports.updateProfile = async (req, res, next) => {
       error.statusCode = 401;
       throw error;
     }
-    
+
     user.name = name;
     user.password = await bcrypt.hash(newPassword, 12);
 
@@ -249,7 +361,7 @@ exports.uploadProfilePicture = async (req, res, next) => {
     if (user.profilePicture) {
       const oldImagePath = path.join(__dirname, '..', user.profilePicture);
       if (fs.existsSync(oldImagePath)) {
-        fs.unlink(oldImagePath, err => {
+        fs.unlink(oldImagePath, (err) => {
           if (err) console.error('Error deleting old profile picture:', err);
         });
       }
@@ -263,13 +375,13 @@ exports.uploadProfilePicture = async (req, res, next) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      profilePicture: imagePath
+      profilePicture: imagePath,
     };
 
     res.status(200).json({
       message: 'Profile picture uploaded successfully',
       user: userData,
-      imagePath: imagePath
+      imagePath: imagePath,
     });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;
