@@ -1,5 +1,6 @@
 import "./LoginForm.css";
-import { login, googleAuth } from "../../../services/authService";
+import { login } from "../../../api/auth";
+import { googleAuth } from "../../../services/authService";
 import { useState } from "react";
 import {
   AtSymbolIcon,
@@ -21,22 +22,31 @@ export default function LoginForm() {
     const credentials = Object.fromEntries(formData);
 
     try {
-      const response = await login(credentials);
-      toast.success(response.message);
-
-      const redirectUrl = new URL("/auth/callback", window.location.origin);
-      redirectUrl.searchParams.set("token", response.token);
-      redirectUrl.searchParams.set("isNewUser", String(response.isNewUser));
-      redirectUrl.searchParams.set(
-        "hasWorkoutPlan",
-        String(response.hasWorkoutPlan)
+      const { success, data, error, validationErrors, message } = await login(
+        credentials
       );
-      redirectUrl.searchParams.set("isAdmin", String(response.isAdmin));
+      if (success) {
+        toast.success(message);
 
-      // Redirect to auth callback with all parameters
-      window.location.href = redirectUrl.toString();
-    } catch (err) {
-      toast.error(err.message);
+        const redirectUrl = new URL("/auth/callback", window.location.origin);
+        redirectUrl.searchParams.set("token", data.token);
+        redirectUrl.searchParams.set("isNewUser", String(data.isNewUser));
+        redirectUrl.searchParams.set(
+          "hasWorkoutPlan",
+          String(data.hasWorkoutPlan)
+        );
+        redirectUrl.searchParams.set("isAdmin", String(data.isAdmin));
+
+        window.location.href = redirectUrl.toString();
+      } else if (error) {
+        if (validationErrors?.length > 0) {
+          validationErrors.forEach((err) => toast.error(err.msg || err));
+        } else {
+          toast.error(error);
+        }
+      }
+    } catch (error) {
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +81,7 @@ export default function LoginForm() {
               Password
             </label>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               placeholder="MyPass!123"

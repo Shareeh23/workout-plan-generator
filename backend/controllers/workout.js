@@ -250,25 +250,13 @@ exports.logWorkout = async (req, res, next) => {
       throw error;
     }
 
-    console.log('Authenticated user:', req.user); // Debug log
-
-    if (!req.user || !req.user._id) {
+    if (!req.user) {
       const error = new Error('User authentication failed');
       error.statusCode = 401;
       throw error;
     }
 
     const { sessionOrder, exercises } = req.body;
-
-    console.log('Creating workout log with data:', {
-      // Debug log
-      user: req.user._id,
-      sessionOrder,
-      exercises: exercises.map((ex) => ({
-        name: ex.name,
-        performedSets: ex.performedSets,
-      })),
-    });
 
     const workoutLog = new WorkoutLog({
       userId: req.user._id,
@@ -290,10 +278,6 @@ exports.logWorkout = async (req, res, next) => {
       data: workoutLog,
     });
   } catch (err) {
-    console.error('Error in logWorkout:', err);
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
     next(err);
   }
 };

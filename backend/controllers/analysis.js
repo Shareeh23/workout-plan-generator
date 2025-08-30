@@ -24,7 +24,6 @@ function calculateProgress(history) {
 function analyzeTrend(history, metric) {
   if (history.length < 3) return 'insufficient data';
   
-  // 1. Calculate the slope (existing code)
   const points = history.map((h, i) => ({ x: i, y: h[metric] }));
   const n = points.length;
   let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
@@ -38,7 +37,6 @@ function analyzeTrend(history, metric) {
   
   const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
   
-  // 2. Calculate R-squared (goodness of fit)
   const yMean = sumY / n;
   let ssTot = 0;
   let ssRes = 0;
@@ -51,14 +49,12 @@ function analyzeTrend(history, metric) {
   
   const rSquared = 1 - (ssRes / ssTot);
   
-  // 3. Determine trend confidence
   let confidence = 'low';
-  if (Math.abs(slope) > 0.1) {  // Adjust threshold as needed
+  if (Math.abs(slope) > 0.1) { 
     if (rSquared > 0.5) confidence = 'high';
     else if (rSquared > 0.3) confidence = 'medium';
   }
   
-  // 4. Check for volatility (standard deviation of residuals)
   const residuals = points.map(p => {
     const yPred = slope * p.x + (sumY - slope * sumX) / n;
     return p.y - yPred;
@@ -68,11 +64,11 @@ function analyzeTrend(history, metric) {
     residuals.reduce((sum, r) => sum + r * r, 0) / n
   );
   
-  const isVolatile = residualStdDev > (yMean * 0.1); // 10% of mean as threshold
-  
+  const isVolatile = residualStdDev > (yMean * 0.1);
+
   return {
     slope,
-    rSquared,  // 0-1, where 1 is perfect fit
+    rSquared,  
     confidence,
     isVolatile,
     direction: 

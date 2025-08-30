@@ -1,5 +1,69 @@
 import apiClient from './apiClient';
 
+export const signup = async (userData) => {
+  try {
+    const response = await apiClient.put('/auth/signup/local', userData, {
+      withCredentials: true
+    });
+    
+    return {
+      success: true,
+      data: response.data,
+      message: response.data?.message,
+    };
+  } catch (error) {
+    if (error.response?.status === 422) {
+      const validationErrors = error.response.data?.data || [];
+      const errorMessage = 
+        validationErrors.map((err) => err.msg).join(' ');
+      return {
+        success: false,
+        error: errorMessage,
+        status: 422,
+        validationErrors,
+      };
+    }
+
+    return {
+      success: false,
+      error: error.response?.data?.message,
+      status: error.response?.status,
+    };
+  }
+};
+
+export const login = async (credentials) => {
+  try {
+    const response = await apiClient.put('/auth/login', credentials, {
+      withCredentials: true
+    });
+    
+    return {
+      success: true,
+      data: response.data,
+      message: response.data?.message,
+    };
+  } catch (error) {
+    if (error.response?.status === 422) {
+      const validationErrors = error.response.data?.data || [];
+      const errorMessage = 
+        validationErrors.map((err) => err.msg).join(' ') || 'Validation failed';
+      return {
+        success: false,
+        error: errorMessage,
+        status: 422,
+        validationErrors,
+      };
+    }
+
+    return {
+      success: false,
+      error: error.response?.data?.message,
+      status: error.response?.status,
+    };
+  }
+};
+
 export const uploadProfilePicture = async (file) => {
   try {
     const formData = new FormData();

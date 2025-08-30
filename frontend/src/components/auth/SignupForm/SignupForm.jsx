@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import "./SignupForm.css";
+import { signup } from "../../../api/auth";
 import { googleAuth } from "../../../services/authService";
 import {
   AtSymbolIcon,
@@ -9,8 +10,6 @@ import {
   UserIcon,
 } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
-import { signup } from "../../../services/authService";
-import "./SignupForm.css";
 
 export default function SignupForm() {
   const [formData, setFormData] = useState({
@@ -25,18 +24,29 @@ export default function SignupForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
     try {
-      const response = await signup(formData);
-      console.log(response)
-      if (response.token) {
-        localStorage.setItem("token", response.token);
+      const { success, data, error, validationErrors, message } = await signup(
+        formData
+      );
+
+      if (success) {
+        if (data?.token) {
+          localStorage.setItem("token", data.token);
+        }
+        toast.success(message);
+        setTimeout(() => {
+          window.location.href = "/select-plan";
+        }, 1500);
+      } else {
+        if (validationErrors?.length > 0) {
+          validationErrors.forEach((err) => toast.error(err.msg || err));
+        } else {
+          toast.error(error);
+        }
       }
-      toast.success(response.message);
-      setTimeout(() => {
-        window.location.href = "/select-plan";
-      }, 1500);
-    } catch (err) {
-      toast.error(err.message)
+    } catch (error) {
+      toast.error(error?.message);
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +107,7 @@ export default function SignupForm() {
               Password
             </label>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               placeholder="MyPass!123"
@@ -108,8 +118,8 @@ export default function SignupForm() {
               autoComplete="new-password"
             />
           </div>
-          <div 
-            className="icon cursor-pointer"
+          <div
+            className="icon"
             onClick={() => setShowPassword(!showPassword)}
             aria-label={showPassword ? "Hide password" : "Show password"}
           >

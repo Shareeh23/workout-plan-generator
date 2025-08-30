@@ -9,7 +9,7 @@ import { getCurrentUser } from "./api/auth";
 import { Toaster } from "sonner";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import SignupPage from "./pages/SignupPage/SignupPage";
-import ResetPassword from './pages/ResetPassword/ResetPassword';
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import AuthCallback from "./pages/AuthCallback/AuthCallback";
 import AuthFailure from "./pages/AuthFailure/AuthFailure";
 import WorkoutPlan from "./pages/WorkoutPlan/WorkoutPlan";
@@ -79,7 +79,18 @@ function App() {
 
   return (
     <Router>
-      <Toaster position="top-right" richColors expand={true} closeButton />
+      <Toaster
+        position="top-right"
+        visibleToasts={4}
+        richColors
+        expand={true}
+        closeButton
+        toastOptions={{
+          style: {
+            "--width": "200px",
+          },
+        }}
+      />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
