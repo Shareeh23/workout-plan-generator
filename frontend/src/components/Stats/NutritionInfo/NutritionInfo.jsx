@@ -48,7 +48,7 @@ const NutritionInfo = ({ userData }) => {
         {bmr && (
           <div className="info-item">
             <span className="info-label text-lg">BMR</span>
-            <span className="info-value text-lg">{bmr} kcal</span>
+            <span className="info-value text-lg">{typeof bmr === 'number' ? Math.ceil(bmr) : bmr} kcal</span>
           </div>
         )}
       </div>

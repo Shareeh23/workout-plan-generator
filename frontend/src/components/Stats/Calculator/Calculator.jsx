@@ -57,10 +57,22 @@ const Calculator = ({ title, macros = {} }) => {
     );
   };
 
+  if (!macros || !macros.split) {
+    return (
+      <div className="calculator">
+        <h3 className="calculator-title">
+          No nutrition information available. Please complete your profile.
+        </h3>
+      </div>
+    );
+  }
+
   return (
     <div className="calculator">
       <h3 className="calculator-title">{title}</h3>
-      <span className="calorie-target text-lg">Calorie Target: {macros.calorieTarget} kcal</span>
+      <span className="calorie-target text-lg">
+        Calorie Target: {macros.calorieTarget} kcal
+      </span>
       <div className="rings-container">
         {renderRing("carbs")}
         {renderRing("fat")}

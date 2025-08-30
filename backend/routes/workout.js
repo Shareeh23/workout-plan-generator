@@ -1,7 +1,9 @@
 const express = require('express');
 const { body, query, param } = require('express-validator');
 const isAuth = require('../middleware/is-auth');
+const rejectHtml = require('../middleware/reject-html');
 const workoutController = require('../controllers/workout.js');
+
 
 const router = express.Router();
 
@@ -46,6 +48,8 @@ router.get(
 router.post(
   '/generate',
   isAuth,
+  rejectHtml('archetype'),
+  rejectHtml('trainingDays'),
   [
     body('archetype')
       .notEmpty()

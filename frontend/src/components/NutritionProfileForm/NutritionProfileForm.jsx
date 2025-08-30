@@ -129,7 +129,7 @@ const NutritionProfileForm = ({
                         className="config-form-input"
                         type="number"
                         min="18"
-                        max="60"
+                        max="80"
                         placeholder="25"
                         {...register("age", { valueAsNumber: true })}
                       />
@@ -142,8 +142,8 @@ const NutritionProfileForm = ({
                       <input
                         className="config-form-input"
                         type="number"
-                        min="100"
-                        max="250"
+                        min="120"
+                        max="230"
                         placeholder="180"
                         {...register("height", { valueAsNumber: true })}
                       />
@@ -158,7 +158,7 @@ const NutritionProfileForm = ({
                         type="number"
                         step="1"
                         min="40"
-                        max="150"
+                        max="250"
                         placeholder="85"
                         {...register("weight", { valueAsNumber: true })}
                       />

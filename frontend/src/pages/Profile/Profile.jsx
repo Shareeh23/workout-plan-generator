@@ -3,6 +3,7 @@ import { getNutritionProfile } from "../../api/nutritionProfile";
 import Navbar from "../../components/Navbar/Navbar";
 import Calculator from "../../components/Stats/Calculator/Calculator";
 import NutritionInfo from "../../components/Stats/NutritionInfo/NutritionInfo";
+import WorkoutPlanSessions from "../../components/WorkoutPlanSessions/WorkoutPlanSessions";
 import "./Profile.css";
 
 const Profile = ({ user }) => {
@@ -77,7 +78,9 @@ const Profile = ({ user }) => {
             <NutritionInfo userData={nutritionData} />
           </div>
         </div>
-        <div className="profile-page-right-section"></div>
+        <div className="profile-page-right-section">
+          <WorkoutPlanSessions />
+        </div>
       </div>
     </div>
   );

@@ -14,6 +14,20 @@ export async function getWorkoutPlan(forceRefresh = false) {
   return workoutPlanCache;
 }
 
+export async function getFullWorkoutPlan() {
+  const token = localStorage.getItem('token');
+  const res = await fetch('http://localhost:3000/workout/plan', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  
+  if (!res.ok) {
+    throw new Error('Failed to fetch workout plan');
+  }
+  
+  const data = await res.json();
+  return data.data; 
+}
+
 export async function getWorkoutLogs(forceRefresh = false) {
   if (workoutLogsCache && !forceRefresh) return workoutLogsCache;
   const token = localStorage.getItem('token');
@@ -84,7 +98,7 @@ export async function getPredefinedPlans() {
     throw new Error('Failed to fetch predefined plans');
   }
   const data = await res.json();
-  return data.data; // Returns the array of predefined plans
+  return data.data;
 }
 
 export const saveWorkoutLog = async (logData) => {

@@ -12,16 +12,16 @@ router.post(
   isAuth,
   [
     body('height')
-      .isFloat({ min: 100, max: 250 })
-      .withMessage('Height must be between 100cm and 250cm'),
+      .isFloat({ min: 120, max: 230 })
+      .withMessage('Height must be between 120cm and 230cm'),
       
     body('weight')
-      .isFloat({ min: 30, max: 300 })
-      .withMessage('Weight must be between 30kg and 300kg'),
+      .isFloat({ min: 40, max: 250 })
+      .withMessage('Weight must be between 40kg and 250kg'),
       
     body('age')
-      .isInt({ min: 18, max: 120 })
-      .withMessage('Age must be between 18 and 120'),
+      .isInt({ min: 18, max: 80 })
+      .withMessage('Age must be between 18 and 80'),
       
     body('gender')
       .isIn(['male', 'female', 'other'])

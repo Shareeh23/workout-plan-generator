@@ -90,7 +90,6 @@ exports.generateWorkoutPlan = async (req, res, next) => {
 
     const user = await User.findById(req.user._id);
 
-    // Check for active plan
     if (user.workoutPlan?.isActive) {
       return res.status(400).json({
         status: 'error',
@@ -104,7 +103,6 @@ exports.generateWorkoutPlan = async (req, res, next) => {
     const aiResponse = await generateWorkoutFromAI(archetype, trainingDays);
     const workoutPlan = parseWorkoutPlan(aiResponse);
 
-    // Set plan as active
     user.workoutPlan = { ...workoutPlan, isActive: true };
 
     if (user.workoutHistory) {
@@ -124,13 +122,11 @@ exports.generateWorkoutPlan = async (req, res, next) => {
   }
 };
 
-// In workout.js controller
 exports.assignPredefinedPlan = async (req, res, next) => {
   try {
     const { planId } = req.params;
     const userId = req.user.id;
 
-    // Find the user and the predefined plan
     const [user, predefinedPlan] = await Promise.all([
       User.findById(userId),
       WorkoutPlan.findById(planId).lean(),
@@ -178,7 +174,6 @@ exports.assignPredefinedPlan = async (req, res, next) => {
   }
 };
 
-// 1RM calculation endpoint
 exports.calculateOneRepMax = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -213,7 +208,6 @@ exports.deactivatePlan = async (req, res, next) => {
       });
     }
 
-    // Update history entry before clearing plan
     if (user.workoutHistory) {
       const activePlanIndex = user.workoutHistory.findIndex((entry) =>
         entry.planRef.equals(user.workoutPlan._id)

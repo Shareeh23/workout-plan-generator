@@ -1,4 +1,3 @@
-// Harris-Benedict equation for BMR calculation
 exports.calculateBMR = (gender, weight, height, age) => {
   if (gender === 'male') {
     return 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age;
@@ -25,8 +24,8 @@ exports.calculateDailyCalories = (
 
   const GOAL_ADJUSTMENTS = {
     maintain: 0,
-    lose: -500, // 500 calorie deficit
-    gain: 500, // 500 calorie surplus
+    lose: -500, 
+    gain: 500,
   };
 
   const bmr = this.calculateBMR(gender, weight, height, age);
