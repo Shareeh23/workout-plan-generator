@@ -96,6 +96,8 @@ app.use((error, req, res, next) => {
   res.status(status).json({ statusCode: status, message: message, data: data });
 });
 
+console.log('MongoDB Connection String:', `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_CLUSTER}/${process.env.MONGO_DB}?retryWrites=true&w=majority`);
+
 mongoose
   .connect(MONGO_URI)
   .then(() => {
