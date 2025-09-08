@@ -1,2 +1,18 @@
-node_modules/
+# Root level .gitignore
+node_modules/ 
 .env
+.DS_Store
+.idea/
+.vscode/
+*.log
+dist/
+dist-ssr/
+*.local
+
+# Backend specific
+backend/uploads/
+backend/logs/
+
+# Frontend specific
+frontend/.env
+frontend/dist/
