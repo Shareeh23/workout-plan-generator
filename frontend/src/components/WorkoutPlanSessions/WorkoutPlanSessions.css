@@ -1,0 +1,73 @@
+.workout-plan-sessions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2.4rem;
+  width: 100%;
+  overflow: hidden;
+}
+
+.sessions-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2.4rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.workout-plan-sessions-heading {
+  color: var(--lime-green) !important;
+}
+
+.session-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 1.6rem;
+  flex: 1 1 calc(33.33% - 1.6rem); /* 50% width minus half the gap */
+  min-width: 0;
+  max-width: 33.33%;
+  padding: 1.6rem;
+  border-radius: 0.8rem;
+  border: var(--shadow-md);
+  background-color: var(--ivory-cream-100);
+}
+
+.session-card-focus-areas {
+  padding: 0.8rem;
+  border-radius: 0.4rem;
+  color: var(--ivory-cream-100) !important;
+  background-color: var(--tangerine-75);
+}
+
+.session-exercises-list {
+  display: flex;
+  flex-direction: column;
+  align-items: space-between;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.exercise-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 0.4rem;
+  background-color: var(--indigo-25);
+}
+
+.session-exercise-item, .session-exercise-item-alternate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}

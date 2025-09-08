@@ -1,0 +1,161 @@
+/* Workout Plan Page Styles */
+.workout-plan-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--indigo-100);
+}
+
+.workout-plan-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.workout-plan-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  background: var(--ivory-cream-100);
+  border-radius: 2rem;
+  box-shadow: var(--shadow-md);
+  padding: 3rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.workout-plan-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.workout-plan-header .text-md {
+  color: var(--black-50);
+}
+
+/* Form Styles */
+.workout-plan-generator-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+  gap: 1rem;
+}
+
+.form-label {
+  display: block;
+  width: 30%;
+}
+
+.text-sm {
+  color: var(--ivory-cream-100) !important;
+}
+
+/* Input Styles */
+.form-input {
+  width: 80%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--lime-green);
+  border-radius: 0.25rem;
+  font-size: var(--body-md);
+  color: var(--ivory-cream-100);
+  background-color: var(--indigo-50);
+  transition: all 0.2s ease;
+  font-family: var(--font-body);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--tangerine-100);
+}
+
+/* Days Selector */
+.days-selector {
+  display: flex;
+  width: 80%;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.day-option {
+  flex: 1;
+  min-width: 60px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.day-label {
+  display: block;
+  padding: 0.75rem 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: var(--ivory-cream-100);
+  color: var(--black-100);
+  transition: all 0.2s;
+  font-weight: var(--font-medium);
+}
+
+.day-option input:checked + .day-label {
+  background-color: var(--tangerine-100);
+  color: var(--ivory-cream-100);
+  border-color: var(--tangerine-100);
+}
+
+.day-option:hover .day-label {
+  border-color: var(--lime-green);
+  background-color: var(--lime-green);
+}
+
+/* Form Actions */
+.form-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Hide visually but remain accessible */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.btn-primary-lg {
+  height: 40px !important;
+}
+
+.btn-primary-lg:disabled {
+  background-color: var(--tangerine-50);
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .workout-plan-card {
+    padding: 1.5rem;
+  }
+  
+  .days-selector {
+    flex-direction: column;
+  }
+  
+  .day-option {
+    width: 100%;
+  }
+}

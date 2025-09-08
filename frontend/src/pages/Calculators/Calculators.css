@@ -1,0 +1,26 @@
+.calculator-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2.4rem 6rem;
+  background-color: var(--warm-beige-100);
+  min-height: 100vh;
+}
+
+.page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+  width: 100%;
+}
+
+.page-container-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  width: 100%;
+}

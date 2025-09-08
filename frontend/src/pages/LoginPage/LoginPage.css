@@ -1,0 +1,92 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--indigo-100);
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  border-radius: 2rem;
+  min-height: 350px;
+  min-width: 600px;
+  background-color: var(--ivory-cream-100);
+}
+
+.login-content {
+  width: 100%;
+  gap: 1rem;
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.auth-links a {
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.auth-links a:hover {
+  color: var(--indigo-100);
+  text-decoration: underline;
+}
+
+.toast-message {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  max-width: 90%;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: fadeIn 0.3s ease-out;
+}
+.toast-message.error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.toast-message.success {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.toast-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  margin-left: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}

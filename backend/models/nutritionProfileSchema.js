@@ -28,12 +28,12 @@ const nutritionProfileSchema = new mongoose.Schema(
     macroTarget: {
       macroSplit: {
         type: String,
-        enum: ['40-30-30', '50-25-25', '30-40-30'],
+        enum: ['40-30-30', '50-25-25', '60-20-20'],
         required: true,
       },
-      protein: { type: Number },
       carbs: { type: Number },
       fat: { type: Number },
+      protein: { type: Number },
     },
   },
   { _id: false }

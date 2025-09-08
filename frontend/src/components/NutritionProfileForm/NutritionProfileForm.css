@@ -1,0 +1,84 @@
+/* frontend/src/components/NutritionProfileForm/NutritionProfileForm.css */
+
+.nutrition-profile-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  width: 100%;
+  border-radius: 1.6rem;
+}
+
+.nutrition-profile-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  gap: 1.6rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: fit-content;
+  gap: 0.8rem;
+}
+
+.tab {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  border-radius: 0 !important;
+  color: var(--indigo-100) !important;
+  border: 2px solid transparent !important;
+  position: relative;
+  font-weight: 500 !important;
+}
+
+.tab:hover {
+  color: var(--indigo-75) !important;
+}
+
+.tab.active {
+  color: var(--indigo-75) !important;
+  border-bottom-color: var(--tangerine-75) !important;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+}

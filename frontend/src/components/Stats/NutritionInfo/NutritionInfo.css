@@ -1,0 +1,46 @@
+.nutrition-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  width: 100%;
+  padding: 2.4rem;
+  border-radius: 2.4rem;
+  background-color: var(--indigo-75);
+}
+
+.nutrition-info-header {
+  color: var(--lime-green) !important;
+}
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem;
+  border-radius: 0.4rem;
+  background: var(--ivory-cream-100);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}

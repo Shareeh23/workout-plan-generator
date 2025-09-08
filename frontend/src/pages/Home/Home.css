@@ -1,0 +1,160 @@
+.home-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+  padding: 2.4rem 6rem;
+  background-color: var(--warm-beige-100);
+}
+
+.home-dashboard {
+  display: flex;
+  flex-direction: row;
+  gap: 2.4rem;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.6rem;
+  width: 40%;
+}
+
+.model-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  width: auto;
+}
+
+.anterior-view, .posterior-view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  height: auto;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+.color-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.6rem;
+  width: auto;
+  height: auto;
+  padding: 1.2rem;
+  border-radius: 0.4rem;
+  background-color: var(--indigo-75);
+}
+
+.color-legend h4 {
+  color: var(--lime-green);
+}
+
+.legend-items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.legend-color {
+  display: inline-block;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+}
+
+.legend-color.prioritized {
+  background-color: var(--tangerine-100);
+}
+
+.legend-color.neutral {
+  background-color: var(--sea-green);
+}
+
+.legend-color.weak {
+  background-color: var(--indigo-50);
+}
+
+.legend-item span:last-child {
+  color: var(--ivory-cream-100);
+}
+
+.left-section,
+.calendar-section-card,
+.upcoming-session-card {
+  min-width: 0;
+  min-height: 0;
+}
+
+.left-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2.4rem;
+  height: 100%;
+  width: 60%;
+}
+
+.calendar-section-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  border-radius: 2.4rem;
+  height: auto;
+  width: auto;
+  background-color: var(--indigo-75);
+}
+
+.upcoming-session-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  border-radius: 2.4rem;
+  height: auto;
+  flex: 1;
+  background-color: var(--indigo-75);
+}
+
+/* Motivation Card Styles */
+.motivation-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem;
+  background-color: var(--indigo-75);
+  border-radius: 2.4rem;
+  width: auto;
+  height: auto;
+}
+
+.motivation-card .english {
+  white-space: wrap;
+  color: var(--ivory-cream-100);
+}
+
+.motivation-card .japanese {
+  white-space: wrap;
+  color: var(--lime-green);
+}

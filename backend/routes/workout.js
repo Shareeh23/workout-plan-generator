@@ -1,13 +1,55 @@
 const express = require('express');
 const { body, query, param } = require('express-validator');
 const isAuth = require('../middleware/is-auth');
+const rejectHtml = require('../middleware/reject-html');
 const workoutController = require('../controllers/workout.js');
 
+
 const router = express.Router();
+
+router.get('/plan', isAuth, workoutController.getFullWorkoutPlan);
+
+router.get(
+  '/plan/priorities',
+  isAuth,
+  workoutController.getMuscleGroupPriorities
+);
+
+router.get('/plan/summary', isAuth, workoutController.getWorkoutPlanSummary);
+
+router.get(
+  '/plan/exercises',
+  isAuth,
+  workoutController.getPlanExercises
+);
+
+router.get(
+  '/plan/sessions/:sessionOrder',
+  isAuth,
+  [
+    param('sessionOrder')
+      .isInt({ min: 1 })
+      .withMessage('Valid session order required'),
+  ],
+  workoutController.getWorkoutSession
+);
+
+router.get(
+  '/planned-exercises',
+  isAuth,
+  [
+    query('sessionOrder')
+      .isInt({ min: 1 })
+      .withMessage('Valid session order required'),
+  ],
+  workoutController.getPlannedExercises
+);
 
 router.post(
   '/generate',
   isAuth,
+  rejectHtml('archetype'),
+  rejectHtml('trainingDays'),
   [
     body('archetype')
       .notEmpty()
@@ -17,6 +59,8 @@ router.post(
       .isLength({ max: 50 })
       .withMessage('Archetype cannot exceed 50 characters'),
     body('trainingDays')
+      .notEmpty()
+      .withMessage('Training days is required')
       .isInt({ min: 3, max: 6 })
       .withMessage('Must specify 3-6 training days'),
   ],
@@ -38,6 +82,18 @@ router.post(
 );
 
 router.post('/deactivate', isAuth, workoutController.deactivatePlan);
+
+router.get('/predefined-plans', isAuth, workoutController.getPredefinedPlans);
+
+router.post(
+  '/predefined/:planId/assign',
+  isAuth,
+  workoutController.assignPredefinedPlan
+);
+
+// TODO: Logs routes should be on their own page
+
+router.get('/logs', isAuth, workoutController.getLogs);
 
 router.post(
   '/logs',
@@ -64,12 +120,11 @@ router.post(
   workoutController.logWorkout
 );
 
-router.get('/logs', isAuth, workoutController.getLogs);
-
 router.put(
   '/logs/:logId',
   isAuth,
   [
+    param('logId').isMongoId().withMessage('Invalid log ID format'),
     body('sessionOrder').optional().isInt({ min: 1 }),
     body('exercises').optional().isArray({ min: 1 }),
     body('exercises.*.name').optional().notEmpty(),
@@ -79,55 +134,5 @@ router.put(
   ],
   workoutController.updateLog
 );
-
-router.get(
-  '/planned-exercises',
-  isAuth,
-  [
-    query('sessionOrder')
-      .isInt({ min: 1 })
-      .withMessage('Valid session order required'),
-  ],
-  workoutController.getPlannedExercises
-);
-
-router.get(
-  '/plan/priorities',
-  isAuth,
-  workoutController.getMuscleGroupPriorities
-);
-
-router.get('/plan/summary', isAuth, workoutController.getWorkoutPlanSummary);
-
-router.get('/plan', isAuth, workoutController.getFullWorkoutPlan);
-
-router.get(
-  '/plan/sessions/:sessionOrder',
-  isAuth,
-  [
-    param('sessionOrder')
-      .isInt({ min: 1 })
-      .withMessage('Valid session order required'),
-  ],
-  workoutController.getWorkoutSession
-);
-
-router.post(
-  '/log',
-  isAuth,
-  [
-    body('workoutId')
-      .notEmpty()
-      .withMessage('Workout ID is required')
-      .isMongoId()
-      .withMessage('Invalid workout ID format'),
-    body('exercises')
-      .isArray({ min: 1 })
-      .withMessage('At least 1 exercise must be logged'),
-  ],
-  workoutController.logWorkout
-);
-
-router.get('/history', isAuth, workoutController.getWorkoutPlanSummary);
 
 module.exports = router;

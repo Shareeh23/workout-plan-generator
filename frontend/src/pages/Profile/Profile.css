@@ -1,0 +1,49 @@
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+  min-height: 100vh;
+  padding: 2.4rem 6rem;
+  background-color: var(--warm-beige-100);
+}
+
+.profile-page-container{
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2.4rem;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.profile-page-left-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 1.6rem;
+  width: 25%;
+}
+
+.profile-page-right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2.4rem;
+  flex: 1;
+  padding: 2.4rem;
+  border-radius: 1.6rem;
+  overflow: hidden;
+  background-color: var(--indigo-75);
+}
+
+.calculators-container, .nutrition-info-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  height: auto;
+}
+

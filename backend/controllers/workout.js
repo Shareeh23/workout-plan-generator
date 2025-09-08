@@ -1,10 +1,13 @@
-const axios = require('axios');
+const mongoose = require('mongoose');
 const User = require('../models/user');
-const { parseWorkoutPlan } = require('../utils/workoutParser');
-const oneRepMaxCalculator = require('../services/oneRepMaxCalculator');
+const WorkoutPlan = require('../models/workoutPlanModel');
+const WorkoutLog = require('../models/workoutLogSchema');
+
 const { validationResult } = require('express-validator');
 const { WorkoutGenerationError } = require('../utils/errors');
-const WorkoutLog = require('../models/workoutLogSchema');
+const { parseWorkoutPlan } = require('../utils/workoutParser');
+const oneRepMaxCalculator = require('../services/oneRepMaxCalculator');
+const axios = require('axios');
 
 const systemPrompt = `
 You are a knowledgeable personal trainer who generates training plans inspired by fictional character physiques and Natural Hypertrophy's style.
@@ -87,7 +90,6 @@ exports.generateWorkoutPlan = async (req, res, next) => {
 
     const user = await User.findById(req.user._id);
 
-    // Check for active plan
     if (user.workoutPlan?.isActive) {
       return res.status(400).json({
         status: 'error',
@@ -101,12 +103,11 @@ exports.generateWorkoutPlan = async (req, res, next) => {
     const aiResponse = await generateWorkoutFromAI(archetype, trainingDays);
     const workoutPlan = parseWorkoutPlan(aiResponse);
 
-    // Set plan as active
     user.workoutPlan = { ...workoutPlan, isActive: true };
 
     if (user.workoutHistory) {
       user.workoutHistory.push({
-        planRef: workoutPlan._id,
+        planRef: user.workoutPlan._id,
         planName: workoutPlan.planName,
         createdAt: workoutPlan.createdAt,
         completedAt: null,
@@ -121,7 +122,58 @@ exports.generateWorkoutPlan = async (req, res, next) => {
   }
 };
 
-// 1RM calculation endpoint
+exports.assignPredefinedPlan = async (req, res, next) => {
+  try {
+    const { planId } = req.params;
+    const userId = req.user.id;
+
+    const [user, predefinedPlan] = await Promise.all([
+      User.findById(userId),
+      WorkoutPlan.findById(planId).lean(),
+    ]);
+
+    if (!predefinedPlan) {
+      return res
+        .status(404)
+        .json({ status: 'error', message: 'Workout plan not found' });
+    }
+
+    user.workoutPlan = {
+      ...predefinedPlan,
+      _id: new mongoose.Types.ObjectId(),
+      source: 'predefined',
+      isActive: true,
+      metadata: {
+        ...predefinedPlan.metadata,
+        originalPlanId: planId,
+        assignedAt: new Date(),
+      },
+    };
+
+    delete user.workoutPlan.__v;
+    if (!user.workoutHistory) {
+      user.workoutHistory = [];
+    }
+
+    user.workoutHistory.push({
+      planRef: planId,
+      planName: predefinedPlan.planName,
+      programTheme: predefinedPlan.programTheme,
+      startedAt: new Date(),
+    });
+
+    await user.save();
+
+    res.json({
+      status: 'success',
+      message: 'Workout plan assigned successfully',
+      workoutPlan: predefinedPlan,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.calculateOneRepMax = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -156,7 +208,6 @@ exports.deactivatePlan = async (req, res, next) => {
       });
     }
 
-    // Update history entry before clearing plan
     if (user.workoutHistory) {
       const activePlanIndex = user.workoutHistory.findIndex((entry) =>
         entry.planRef.equals(user.workoutPlan._id)
@@ -167,7 +218,7 @@ exports.deactivatePlan = async (req, res, next) => {
       }
     }
 
-    user.workoutPlan = undefined; // Remove the entire plan
+    user.workoutPlan = undefined;
     await user.save();
 
     res.json({
@@ -193,13 +244,24 @@ exports.logWorkout = async (req, res, next) => {
       throw error;
     }
 
+    if (!req.user) {
+      const error = new Error('User authentication failed');
+      error.statusCode = 401;
+      throw error;
+    }
+
     const { sessionOrder, exercises } = req.body;
-    const userId = req.userId;
 
     const workoutLog = new WorkoutLog({
-      user: userId,
-      sessionOrder,
-      exercises,
+      userId: req.user._id,
+      sessionOrder: sessionOrder || 1,
+      exercises: exercises.map((exercise) => ({
+        name: exercise.name,
+        performedSets: exercise.performedSets.map((set) => ({
+          weight: parseFloat(set.weight) || 0,
+          reps: parseInt(set.reps) || 0,
+        })),
+      })),
     });
 
     await workoutLog.save();
@@ -207,29 +269,10 @@ exports.logWorkout = async (req, res, next) => {
     res.status(201).json({
       message: 'Workout logged successfully',
       logId: workoutLog._id,
+      data: workoutLog,
     });
   } catch (err) {
     next(err);
-  }
-};
-
-exports.createLog = async (req, res, next) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        status: 'error',
-        errors: errors.array(),
-      });
-    }
-
-    const log = await WorkoutLog.create({
-      userId: req.user._id,
-      ...req.body,
-    });
-    res.status(201).json(log);
-  } catch (error) {
-    next(error);
   }
 };
 
@@ -241,7 +284,7 @@ exports.getLogs = async (req, res, next) => {
     res.json(logs);
   } catch (error) {
     next(error);
-  } 
+  }
 };
 
 exports.updateLog = async (req, res, next) => {
@@ -266,6 +309,35 @@ exports.updateLog = async (req, res, next) => {
   }
 };
 
+exports.getPlanExercises = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const exercises = await User.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(userId) } },
+      { $unwind: '$workoutPlan.sessions' },
+      { $unwind: '$workoutPlan.sessions.exercises' },
+      {
+        $group: {
+          _id: '$workoutPlan.sessions.exercises.name',
+          category: { $first: '$workoutPlan.sessions.exercises.category' },
+        },
+      },
+      {
+        $project: {
+          name: '$_id',
+          _id: 0,
+          category: 1,
+        },
+      },
+    ]);
+
+    res.json({ exercises });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getPlannedExercises = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
@@ -277,8 +349,16 @@ exports.getPlannedExercises = async (req, res, next) => {
       });
     }
 
-    const session = user.workoutPlan.trainingDays.find(
-      (day) => day.order === Number(req.query.sessionOrder)
+    const sessions = user.workoutPlan.sessions;
+    if (!Array.isArray(sessions)) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'No sessions found in workout plan',
+      });
+    }
+
+    const session = sessions.find(
+      (s) => s.sessionOrder === Number(req.query.sessionOrder)
     );
 
     if (!session) {
@@ -288,9 +368,17 @@ exports.getPlannedExercises = async (req, res, next) => {
       });
     }
 
+    const exercises = Array.isArray(session.exercises)
+      ? session.exercises.map(({ name, sets, repRange }) => ({
+          name,
+          sets,
+          repRange,
+        }))
+      : [];
+
     res.json({
       status: 'success',
-      exercises: session.exercises,
+      exercises,
     });
   } catch (error) {
     next(error);
@@ -375,7 +463,7 @@ exports.getWorkoutSession = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         status: 'error',
-        errors: errors.array()
+        errors: errors.array(),
       });
     }
 
@@ -416,5 +504,23 @@ exports.getWorkoutHistory = async (req, res, next) => {
     res.json(user.workoutHistory || []);
   } catch (error) {
     next(error);
+  }
+};
+
+exports.getPredefinedPlans = async (req, res, next) => {
+  try {
+    const plans = await WorkoutPlan.find({ source: 'predefined' })
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
+
+    res.json({
+      status: 'success',
+      results: plans.length,
+      data: plans,
+    });
+  } catch (err) {
+    next(err);
   }
 };

@@ -1,0 +1,15 @@
+[build]
+  builder = "nixpacks"
+  buildCommand = "npm install --omit=dev"
+  startCommand = "node app.js"
+
+[deploy]
+  startCommand = "node app.js"
+
+[environment]
+  NODE_ENV = "production"
+  PORT = "3000"
+  NPM_CONFIG_PRODUCTION = "true"
+
+[builds]
+  node = "18.x"

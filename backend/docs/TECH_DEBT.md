@@ -77,6 +77,34 @@ This document lists current technical debts, inconsistencies, and areas for futu
 
 *Priority: Medium - Important for security but current solution works for basic cases*
 
+## 5. Authentication Security Enhancement
+
+**Migrate to HTTP-only cookies with CSRF tokens**
+
+### Current Implementation
+- Using localStorage for JWT tokens in frontend
+- Tokens accessible via JavaScript (XSS vulnerability)
+
+### Why Upgrade to HTTP-only Cookies?
+1. **Better Security**:
+   - HTTP-only cookies can't be accessed via JavaScript
+   - Eliminates XSS token theft risk
+   - CSRF tokens protect against cross-site requests
+
+2. **Recommended Practice**:
+   - OWASP-recommended approach for session management
+   - Widely adopted in production applications
+
+3. **Implementation Requirements**:
+   - Backend changes:
+     - Set `httpOnly` and `secure` flags on cookies
+     - Implement CSRF token generation/validation
+   - Frontend changes:
+     - Remove localStorage token handling
+     - Add CSRF token to headers
+
+*Priority: High - Important security improvement for production*
+
 ---
 
 *Last updated: 2025-07-16*

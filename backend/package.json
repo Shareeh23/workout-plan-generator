@@ -4,7 +4,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -28,10 +28,10 @@
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.1",
-    "multer": "^2.0.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.5",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
-    "uuidv4": "^6.2.13"
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

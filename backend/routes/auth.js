@@ -5,6 +5,7 @@ const isAuth = require('../middleware/is-auth');
 const passport = require('passport');
 const checkEmail = require('../middleware/check-email');
 const rejectHtml = require('../middleware/reject-html');
+const upload = require('../utils/fileUpload');
 
 const router = express.Router();
 
@@ -20,13 +21,12 @@ router.get(
   '/signup/google/callback',
   passport.authenticate('google', {
     session: false,
-    failureRedirect: '/',
+    failureRedirect:
+      'http://localhost:5173/auth-failure?message=Google+login+failed',
     failureMessage: 'Google login failed - please try again',
   }),
   authController.oauthGoogle
 );
-
-// TODO: Failure Redirect should be the sign up route
 
 router.put(
   '/signup/local',
@@ -54,29 +54,26 @@ router.put(
       .bail()
       .isLength({ min: 8 })
       .withMessage('Password must be at least 8 characters long')
-      .bail()
       .matches(/[A-Z]/)
       .withMessage('Password must contain at least one uppercase letter')
-      .bail()
       .matches(/[a-z]/)
       .withMessage('Password must contain at least one lowercase letter')
-      .bail()
       .matches(/[0-9]/)
       .withMessage('Password must contain at least one number')
-      .bail()
       .matches(/[^a-zA-Z0-9]/)
       .withMessage('Password must contain at least one special character'),
     body('name')
       .isString()
       .withMessage('Name must be a string')
       .bail()
+      .notEmpty()
+      .withMessage('Name is required')
+      .bail()
       .matches(/^[a-zA-Z0-9 \-'.,]+$/)
       .withMessage('Name contains invalid characters')
       .bail()
       .trim()
-      .escape()
-      .notEmpty()
-      .withMessage('Name is required'),
+      .escape(),
     checkEmail,
   ],
   authController.signup
@@ -108,12 +105,130 @@ router.put(
   authController.login
 );
 
+router.post('/logout', isAuth, authController.logout);
+
+router.post(
+  '/request-reset',
+  rejectHtml('email'),
+  [
+    body('email')
+      .isString()
+      .withMessage('Email must be a string')
+      .bail()
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage('Email is required')
+      .bail()
+      .isEmail()
+      .withMessage('Please enter a valid email address')
+      .normalizeEmail(),
+  ],
+  authController.requestReset
+);
+
+router.post(
+  '/verify-otp',
+  rejectHtml('email'),
+  rejectHtml('otp'),
+  [
+    body('email')
+      .isString()
+      .withMessage('Email must be a string')
+      .bail()
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage('Email is required')
+      .bail()
+      .isEmail()
+      .withMessage('Please enter a valid email address')
+      .normalizeEmail(),
+    body('otp')
+      .notEmpty()
+      .withMessage('OTP is required')
+      .isNumeric()
+      .withMessage('OTP must be a number')
+      .isLength({ min: 6, max: 6 })
+      .withMessage('OTP must be exactly 6 digits'),
+  ],
+  authController.verifyOtp
+);
+
 router.put(
   '/change-password',
+  rejectHtml('email'),
+  rejectHtml('newPassword'),
+  [
+    body('email')
+      .isString()
+      .withMessage('Email must be a string')
+      .bail()
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage('Email is required')
+      .bail()
+      .isEmail()
+      .withMessage('Please enter a valid email address'),
+    body('newPassword')
+      .isString()
+      .withMessage('New password must be a string')
+      .bail()
+      .notEmpty()
+      .withMessage('New password is required')
+      .bail()
+      .isLength({ min: 8 })
+      .withMessage('New password must be at least 8 characters long')
+      .bail()
+      .matches(/[A-Z]/)
+      .withMessage('New password must contain at least one uppercase letter')
+      .bail()
+      .matches(/[a-z]/)
+      .withMessage('New password must contain at least one lowercase letter')
+      .bail()
+      .matches(/[0-9]/)
+      .withMessage('New password must contain at least one number')
+      .bail()
+      .matches(/[^a-zA-Z0-9]/)
+      .withMessage('New password must contain at least one special character'),
+  ],
+  authController.changePassword
+);
+
+router.patch(
+  '/change-profile',
   isAuth,
+  rejectHtml('email'),
+  rejectHtml('name'),
   rejectHtml('currentPassword'),
   rejectHtml('newPassword'),
   [
+    body('email')
+      .optional()
+      .isString()
+      .withMessage('Email must be a string')
+      .bail()
+      .trim()
+      .escape()
+      .notEmpty()
+      .withMessage('Email cannot be empty')
+      .isEmail()
+      .withMessage('Please enter a valid email address')
+      .normalizeEmail(),
+    body('name')
+      .optional()
+      .isString()
+      .withMessage('Name must be a string')
+      .bail()
+      .notEmpty()
+      .withMessage('Name cannot be empty')
+      .bail()
+      .matches(/^[a-zA-Z0-9 \-'.,]+$/)
+      .withMessage('Name contains invalid characters')
+      .bail()
+      .trim()
+      .escape(),
     body('currentPassword')
       .isString()
       .withMessage('Current password must be a string')
@@ -145,40 +260,6 @@ router.put(
       .equals(body('currentPassword'))
       .withMessage('New password must be different from current password'),
   ],
-  authController.changePassword
-);
-
-router.patch(
-  '/change-profile',
-  isAuth,
-  rejectHtml('email'),
-  rejectHtml('name'),
-  [
-    body('email')
-      .optional()
-      .isString()
-      .withMessage('Email must be a string')
-      .bail()
-      .trim()
-      .escape()
-      .notEmpty()
-      .withMessage('Email cannot be empty')
-      .isEmail()
-      .withMessage('Please enter a valid email address')
-      .normalizeEmail(),
-    body('name')
-      .optional()
-      .isString()
-      .withMessage('Name must be a string')
-      .bail()
-      .matches(/^[a-zA-Z0-9 \-'.,]+$/)
-      .withMessage('Name contains invalid characters')
-      .bail()
-      .trim()
-      .escape()
-      .notEmpty()
-      .withMessage('Name cannot be empty'),
-  ],
   authController.updateProfile
 );
 
@@ -195,6 +276,15 @@ router.delete(
       .withMessage('Please enter your password to confirm account deletion'),
   ],
   authController.deleteAccount
+);
+
+router.get('/profile', isAuth, authController.getUserProfile);
+
+router.post(
+  '/profile-picture',
+  isAuth,
+  upload.single('profilePicture'),
+  authController.uploadProfilePicture
 );
 
 module.exports = router;

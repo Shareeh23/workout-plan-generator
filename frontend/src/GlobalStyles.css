@@ -1,0 +1,445 @@
+/* CSS Variables */
+:root {
+  /* Neutral Colors */
+  --gray-100: #bfbfbf;
+  --black-100: #222222;
+  --black-75: rgba(34, 34, 34, 0.75);
+  --black-50: rgba(34, 34, 34, 0.5);
+  --black-25: rgba(34, 34, 34, 0.25);
+
+  /* Background Colors */
+  --ivory-cream-100: #faf3e1;
+  --ivory-cream-75: rgba(250, 243, 225, 0.75);
+  --ivory-cream-50: rgba(250, 243, 225, 0.5);
+  --ivory-cream-25: rgba(250, 243, 225, 0.25);
+
+  --warm-beige-100: #f5e7c6;
+  --warm-beige-75: rgba(245, 231, 198, 0.75);
+  --warm-beige-50: rgba(245, 231, 198, 0.5);
+  --warm-beige-25: rgba(245, 231, 198, 0.25);
+
+  /* Accent Colors */
+  --tangerine-100: #ff6d1f;
+  --tangerine-75: rgba(255, 109, 31, 0.75);
+  --tangerine-50: rgba(255, 109, 31, 0.5);
+  --tangerine-25: rgba(255, 109, 31, 0.25);
+
+  --indigo-100: #1c223a;
+  --indigo-75: rgba(28, 34, 58, 0.75);
+  --indigo-50: rgba(28, 34, 58, 0.5);
+  --indigo-25: rgba(28, 34, 58, 0.25);
+
+  /* Secondary Colors (rarely used) */
+  --lime-green: #bbfb4c;
+  --sea-green: #2e8b57;
+
+  /* Shadow Variables */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  /* Typography - Font Sizes */
+  --button-sm: 0.75rem;   /* 12px */
+  --button-md: 1rem;      /* 16px */
+  --button-lg: 1.25rem;   /* 20px */
+
+  --body-xs: 0.75rem;     /* 12px */
+  --body-sm: 0.875rem;    /* 14px */
+  --body-md: 1rem;        /* 16px */
+  --body-lg: 1.125rem;    /* 18px */
+  
+  --heading-h5: 1.25rem;  /* 20px */
+  --heading-h4: 1.5rem;   /* 24px */
+  --heading-h3: 1.875rem; /* 30px */
+  --heading-h2: 2.25rem;  /* 36px */
+  --heading-h1: 3rem;     /* 48px */
+  
+  /* Typography - Font Spacing */
+  --button-letter-spacing: 0;
+
+  --body-letter-spacing: 0;  
+
+  --heading-h1-letter-spacing: -0.0105em; /* ~-0.5px at 48px font */
+  --heading-h2-letter-spacing: -0.007em; /* ~-0.25px at 36px font */
+  --heading-h3-letter-spacing: -0.0066em; /* ~-0.2px at 30px font */
+  --heading-h4-letter-spacing: -0.0042em; /* ~-0.1px at 24px font */
+  --heading-h5-letter-spacing: 0;
+  --heading-h6-letter-spacing: 0; 
+
+  /* Typography - Line Heights */
+  --button-sm-line-height: 1.5rem; /* 24px */
+  --button-md-line-height: 1.5rem; /* 24px */
+  --button-lg-line-height: 1.5rem; /* 24px */
+
+  --body-xs-line-height: 1.5;
+  --body-sm-line-height: 1.5;
+  --body-md-line-height: 1.5;
+  --body-lg-line-height: 1.5;
+
+  --heading-h1-line-height: 1.16;
+  --heading-h2-line-height: 1.22;
+  --heading-h3-line-height: 1.26;
+  --heading-h4-line-height: 1.33;
+  --heading-h5-line-height: 1.4;
+  --heading-h6-line-height: 1.5;
+  
+  /* Typography - Font Weights */
+  --font-thin: 100;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-bold: 700;
+  --font-extra-bold: 800;
+  --font-black: 900;
+
+  /* Font Families */
+  --font-body: "Rubik", sans-serif;
+  --font-heading: "Archivo Narrow", sans-serif;
+  --font-symbol: "Space Grotesk Variable", sans-serif;
+
+  /* Corner Radius */
+  --btn-corner-radius: 2.5rem; /* 40px */
+
+  /* Button Dimensions */
+  --btn-sm-vertical-padding: 0.5rem; /* 8px */
+  --btn-sm-horizontal-padding: 1rem; /* 16px */
+  --btn-sm-min-width: 4.875rem; /* 78px */
+  --btn-sm-height: 2rem; /* 32px */
+
+  --btn-md-vertical-padding: 0.625rem; /* 10px */
+  --btn-md-horizontal-padding: 1.25rem; /* 20px */
+  --btn-md-min-width: 6.3125rem; /* 101px */
+  --btn-md-height: 2.5rem; /* 40px */
+
+  --btn-lg-vertical-padding: 0.75rem; /* 12px */
+  --btn-lg-horizontal-padding: 1.5rem; /* 24px */
+  --btn-lg-min-width: 8.1875rem; /* 131px */
+  --btn-lg-height: 3rem; /* 48px */
+}
+
+/* Reset & Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Typography */
+h1 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-bold);
+  font-size: var(--heading-h1);
+  line-height: var(--heading-h1-line-height);
+  letter-spacing: var(--heading-h1-letter-spacing);
+  color: var(--black-100);
+}
+
+h2 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-normal);
+  font-size: var(--heading-h2);
+  line-height: var(--heading-h2-line-height);
+  letter-spacing: var(--heading-h2-letter-spacing);
+  color: var(--black-100);
+}
+
+h3 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-medium);
+  font-size: var(--heading-h3);
+  line-height: var(--heading-h3-line-height);
+  letter-spacing: var(--heading-h3-letter-spacing);
+  color: var(--black-100);
+}
+
+h4 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-normal);
+  font-size: var(--heading-h4);
+  line-height: var(--heading-h4-line-height);
+  letter-spacing: var(--heading-h4-letter-spacing);
+  color: var(--black-100);
+}
+
+h5 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-normal);
+  font-size: var(--heading-h5);
+  line-height: var(--heading-h5-line-height);
+  letter-spacing: var(--heading-h5-letter-spacing);
+  color: var(--black-100);
+}
+
+h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-normal);
+  font-size: var(--body-lg);
+  line-height: var(--heading-h6-line-height);
+  letter-spacing: var(--heading-h6-letter-spacing);
+  color: var(--black-100);
+}
+
+/* Body Text Utilities */
+
+/* Form Labels & Tab Texts */
+.text-label {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  font-size: var(--body-xs);
+  line-height: var(--body-xs-line-height);
+  color: var(--black-100);
+}
+
+/* Hints, Inputs, Footnotes */
+.text-xs {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  font-size: var(--body-xs);
+  line-height: var(--body-xs-line-height);
+  color: var(--black-100);
+}
+
+/* Captions, Secondary Texts */
+.text-sm {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  font-size: var(--body-sm);
+  line-height: var(--body-sm-line-height);
+  color: var(--black-100);
+}
+
+/* Default Body Text & Paragraphs */
+.text-md{
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  font-size: var(--body-md);
+  line-height: var(--body-md-line-height);
+  color: var(--black-100);
+}
+
+/* Primary Body Text & Long Form */
+.text-lg{
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  font-size: var(--body-lg);
+  line-height: var(--body-lg-line-height);
+  color: var(--black-100);
+}
+
+/* Button Classes */
+
+/* Primary Buttons */
+.btn-primary-sm,
+.btn-primary-md,
+.btn-primary-lg {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  color: var(--ivory-cream-100);
+  background-color: var(--tangerine-100);
+  border-radius: var(--btn-corner-radius);
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Secondary Buttons */
+.btn-secondary-sm,
+.btn-secondary-md,
+.btn-secondary-lg {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  color: var(--tangerine-100);
+  background-color: transparent;
+  border-radius: var(--btn-corner-radius);
+  transition: all 0.3s ease;
+  border: 1px solid var(--tangerine-100);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Ghost Buttons */
+.btn-ghost-sm,
+.btn-ghost-md,
+.btn-ghost-lg {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  color: var(--warm-beige-100);
+  background-color: transparent;
+  border-radius: var(--btn-corner-radius);
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Text Buttons */
+.btn-text-sm,
+.btn-text-md,
+.btn-text-lg {
+  font-family: var(--font-body);
+  font-weight: var(--font-normal);
+  color: var(--tangerine-100);
+  background-color: transparent;
+  border-radius: var(--btn-corner-radius);
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Floating Action Buttons */
+.btn-fab-sm,
+.btn-fab-md,
+.btn-fab-lg {
+  font-family: var(--font-symbol);
+  font-weight: var(--font-normal);
+  color: var(--ivory-cream-100);
+  background-color: var(--tangerine-100);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Primary Button States */
+.btn-primary-sm:hover,
+.btn-primary-md:hover,
+.btn-primary-lg:hover {
+  background-color: var(--tangerine-75);
+}
+
+.btn-primary-sm:active,
+.btn-primary-md:active,
+.btn-primary-lg:active {
+  background-color: var(--lime-green);
+}
+
+/* Secondary Button States */
+.btn-secondary-sm:hover,
+.btn-secondary-md:hover,
+.btn-secondary-lg:hover {
+  color: var(--ivory-cream-100);
+  background-color: var(--tangerine-75);
+  border-color: var(--tangerine-75);
+}
+
+.btn-secondary-sm:active,
+.btn-secondary-md:active,
+.btn-secondary-lg:active {
+  color: var(--ivory-cream-100);
+  background-color: var(--lime-green);
+  border-color: var(--lime-green);
+}
+
+/* Ghost Button States */
+.btn-ghost-sm.disabled,
+.btn-ghost-md.disabled,
+.btn-ghost-lg.disabled {
+  color: var(--warm-beige-100);
+}
+
+.btn-ghost-sm.pressed,
+.btn-ghost-md.pressed,
+.btn-ghost-lg.pressed {
+  color: var(--lime-green);
+}
+
+/* Text Button States */
+.btn-text-sm:hover,
+.btn-text-md:hover,
+.btn-text-lg:hover {
+  color: var(--tangerine-75);
+}
+
+.btn-text-sm:active,
+.btn-text-md:active,
+.btn-text-lg:active {
+  color: var(--lime-green);
+}
+
+/* FAB States */
+.btn-fab-sm:hover,
+.btn-fab-md:hover,
+.btn-fab-lg:hover {
+  background-color: var(--tangerine-75);
+}
+
+.btn-fab-sm:active,
+.btn-fab-md:active,
+.btn-fab-lg:active {
+  background-color: var(--lime-green);
+}
+
+/* Small Buttons */
+.btn-primary-sm,
+.btn-secondary-sm,
+.btn-ghost-sm,
+.btn-text-sm {
+  font-size: var(--button-sm);
+  line-height: var(--button-sm-line-height);
+  padding: var(--btn-sm-vertical-padding) var(--btn-sm-horizontal-padding);
+  min-width: var(--btn-sm-min-width);
+  height: var(--btn-sm-height);
+}
+
+/* Medium Buttons */
+.btn-primary-md,
+.btn-secondary-md,
+.btn-ghost-md,
+.btn-text-md {
+  font-size: var(--button-md);
+  line-height: var(--button-md-line-height);
+  padding: var(--btn-md-vertical-padding) var(--btn-md-horizontal-padding);
+  min-width: var(--btn-md-min-width);
+  height: var(--btn-md-height);
+}
+
+/* Large Buttons */
+.btn-primary-lg,
+.btn-secondary-lg,
+.btn-ghost-lg,
+.btn-text-lg {
+  font-size: var(--button-lg);
+  line-height: var(--button-lg-line-height);
+  padding: var(--btn-lg-vertical-padding) var(--btn-lg-horizontal-padding);
+  min-width: var(--btn-lg-min-width);
+  height: var(--btn-lg-height);
+}
+
+/* FAB Sizes - Width equals height */
+.btn-fab-sm {
+  width: var(--btn-sm-height);
+  height: var(--btn-sm-height);
+  font-size: var(--button-sm);
+}
+
+.btn-fab-md {
+  width: var(--btn-md-height);
+  height: var(--btn-md-height);
+  font-size: var(--button-md);
+}
+
+.btn-fab-lg {
+  width: var(--btn-lg-height);
+  height: var(--btn-lg-height);
+  font-size: var(--button-lg);
+}

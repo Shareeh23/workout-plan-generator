@@ -18,3 +18,4 @@ exports.generateAuthResponse = (user) => {
     isAdmin: user.isAdmin
   };
 };
+

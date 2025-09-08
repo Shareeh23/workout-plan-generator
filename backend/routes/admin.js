@@ -1,17 +1,36 @@
 const express = require('express');
 const { body } = require('express-validator');
 const adminController = require('../controllers/admin');
+const isAuth = require('../middleware/is-auth');
 const isAdmin = require('../middleware/is-admin');
+const upload = require('../utils/fileUpload');
 
 const router = express.Router();
 
-// User management
-router.get('/users', isAdmin, adminController.getUsers);
+const parsePlanData = (req, res, next) => {
+  if (req.body.planData) {
+    try {
+      const planData = JSON.parse(req.body.planData);
+      // Merge the parsed data into req.body
+      req.body = { ...req.body, ...planData };
+    } catch (error) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid planData format',
+      });
+    }
+  }
+  next();
+};
 
-// Predefined workout plan management
+router.get('/users', isAuth, isAdmin, adminController.getUsers);
+
 router.post(
   '/plans',
+  isAuth,
   isAdmin,
+  upload.single('image'),
+  parsePlanData,
   [
     // Core fields
     body('planName')
@@ -40,6 +59,10 @@ router.post(
       .optional()
       .isArray()
       .withMessage('Weak points must be an array'),
+    body('imageUrl')
+      .optional() // Make it optional in case the file is being uploaded via multer
+      .isString()
+      .withMessage('Image URL must be a string'),
 
     // Sessions validation
     body('sessions')
@@ -55,17 +78,43 @@ router.post(
     body('sessions.*.exercises.*.sets')
       .isInt({ min: 1 })
       .withMessage('Minimum 1 set required'),
-    body('sessions.*.exercises.*.reps')
-      .isInt({ min: 1 })
-      .withMessage('Minimum 1 rep required'),
+    body('sessions.*.exercises.*.repRange')
+      .isString()
+      .trim()
+      .notEmpty()
+      .withMessage('Rep Range is required')
+      .custom((value) => {
+        // Check if it's a single number, a range, AMRAP, or a distance
+        const isSingleNumber = /^\d+$/.test(value);
+        const isRange = /^\d+\s*-\s*\d+$/.test(value);
+        const isAmrap = value.toUpperCase() === 'AMRAP';
+        const isDistance = /^\d+\s*(m|meters?)$/i.test(value);
+        const isRangeWithSeconds = /^\d+\s*-\s*\d+\s*(s|sec)$/i.test(value);
+        const isSingleNumberWithSeconds = /^\d+\s*(s|sec)$/i.test(value);
+
+        if (
+          !isSingleNumber &&
+          !isRange &&
+          !isAmrap &&
+          !isDistance &&
+          !isRangeWithSeconds &&
+          !isSingleNumberWithSeconds
+        ) {
+          throw new Error(
+            'Invalid format. Use: "8", "8-12", "AMRAP", "50m", "30s", "30sec", or "30-60s"'
+          );
+        }
+        return true;
+      }),
   ],
   adminController.createPlan
 );
 
-router.get('/plans', isAdmin, adminController.getPlans);
+router.get('/plans', isAuth, isAdmin, adminController.getPlans);
 
 router.put(
   '/plans/:id',
+  isAuth,
   isAdmin,
   [
     body('planName')
@@ -100,9 +149,9 @@ router.put(
   adminController.updatePlan
 );
 
-router.delete('/plans/:id', isAdmin, adminController.deletePlan);
+router.delete('/plans/:id', isAuth, isAdmin, adminController.deletePlan);
 
 // Audit logs
-router.get('/audit-logs', isAdmin, adminController.getAuditLogs);
+router.get('/audit-logs', isAuth, isAdmin, adminController.getAuditLogs);
 
 module.exports = router;

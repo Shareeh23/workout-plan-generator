@@ -9,7 +9,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: '/auth/signup/google/callback',
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (profile, done) => {
       try {
         const email = profile.emails[0].value;
         let user = await User.findOne({ email });
@@ -18,12 +18,11 @@ passport.use(
           user = new User({
             name: profile.displayName,
             email: email,
-            password: '', // Not needed for Google-auth users
+            password: '',
             googleId: profile.id,
           });
           await user.save();
         }
-
         return done(null, user);
       } catch (err) {
         return done(err, null);

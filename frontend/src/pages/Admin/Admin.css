@@ -1,0 +1,84 @@
+.admin-container {
+  min-height: 100vh;
+  background-color: var(--warm-beige-100);
+  padding: 2.4rem 6rem;
+}
+
+.admin-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2.4rem;
+  max-width: 1400px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 1.6rem;
+}
+
+.tab-btn {
+  color: var(--black-50) !important;
+  cursor: pointer;
+  border-radius: 0rem !important;
+}
+
+.tab-btn:hover {
+  color: var(--tangerine-100) !important;
+  border-color: var(--indigo-100) !important;
+}
+
+.tab-btn.active {
+  color: var(--indigo-100) !important;
+  border-bottom: 1px solid var(--tangerine-50);
+}
+
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2.4rem;
+}
+
+.users-tab,
+.workouts-tab {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2.4rem;
+}
+
+.section-heading {
+  color: var(--tangerine-100) !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+  .admin-container {
+    padding: 1.6rem 2.4rem;
+  }
+  
+  .users-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-tabs {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .tab-btn {
+    border-radius: 0.4rem;
+    text-align: left;
+  }
+  
+  .action-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.4rem;
+  }
+}
