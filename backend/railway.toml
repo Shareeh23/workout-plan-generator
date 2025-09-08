@@ -1,6 +1,6 @@
 [build]
   builder = "nixpacks"
-  buildCommand = "npm install --production"
+  buildCommand = "npm install --omit=dev"
   startCommand = "node app.js"
 
 [deploy]
