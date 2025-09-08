@@ -1,19 +1,9 @@
 [build]
   builder = "nixpacks"
-  buildCommand = "npm install --omit=dev"
-  startCommand = "node app.js"
 
 [deploy]
-  startCommand = "npm start"
+  startCommand = "node app.js"
 
-[variables]
+[environment]
   NODE_ENV = "production"
-  PORT = 3000
-  NPM_CONFIG_PRODUCTION = "true"
-
-[healthcheck]
-  enabled = true
-  interval = 30
-  retries = 3
-  timeout = 10
-  startPeriod = 30
+  PORT = "3000"
