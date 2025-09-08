@@ -1,12 +1,13 @@
 [build]
 builder = "nixpacks"
 buildCommand = "npm install && npm run build"
-startCommand = "npm run preview"  # or "npm start" for Create React App
-outputDir = "dist"  # or "build" for Create React App
+startCommand = "npm run preview --host"
+outputDir = "dist"
 
 [deploy]
-startCommand = "npm run preview"  # or "npm start" for Create React App
+startCommand = "npm run preview --host"
 
 [environment]
 NODE_ENV = "production"
-VITE_API_URL = "fearless-enthusiasm-production-4435.up.railway.app" 
+VITE_API_URL = "https://fearless-enthusiasm-production-4435.up.railway.app"
+PORT = 3000
